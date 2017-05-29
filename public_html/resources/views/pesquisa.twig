@@ -1,0 +1,49 @@
+{% extends 'templates/wind.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% if problemas is not empty %}
+                {% for item in problemas %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <p><a href="{{ path_for('problema', {'id': item.id}) }}">{{ item.titulo }} - [{{ item.categoria.nome }}]</a></p>
+                                    <span>
+                                        <i class="fa fa-tag"></i>
+                                        {% for tag in item.tags() %}
+                                            <span class="label label-success">{{ tag.nome }}</span>
+                                        {% endfor %}
+                                    </span>
+                                    <span>
+                                        <i class="fa fa-database"></i>
+                                        {% for tabela in item.tabelas() %}
+                                            <span class="label label-success">{{ tabela.nome }}</span>
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="panel-body">
+                            <h4>Situação</h4>
+                            <p>{{ item.situacao }}</p>
+                            
+                            <h4>Possível solução</h4>
+                            <p>{{ item.solucao }}</p>
+                        </div>
+                        <div class="panel-footer">
+                            <i class="fa fa-user"></i> {{ item.criador }}<br>
+                            <i class="fa fa-calendar"></i> Criado em {{ item.created_at }} atualizado em {{ item.updated_at }}
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {{ problemas.links | raw }}
+            {% else %}
+                <p>Nenhum item encontrado!</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

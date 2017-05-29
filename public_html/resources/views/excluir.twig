@@ -1,0 +1,53 @@
+{% extends 'templates/wind.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Excluir item
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <form action="{{ path_for('excluir', {'id': p.id}) }}" method="POST">
+                                <div class="form-group">
+                                    <label class="control-label" for="titulo">Título</label>
+                                    <input type="text" id="titulo" name="titulo" class="form-control" value="{{ p.titulo }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="categoria">Categoria</label>
+                                    <input type="text" id="categoria" name="categoria" class="form-control" value="{{ p.categoria.nome }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="tags">Tags</label>
+                                    <input type="text" id="tags" name="tags" class="form-control" value="{{ p.getTagsInput() }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="tabelas">Tabelas envolvidas</label>
+                                    <input type="text" id="tabelas" name="tabelas" class="form-control" value="{{ p.getTabelasInput() }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="situacao">Situação</label>
+                                    <textarea id="situacao" name="situacao" class="form-control" readonly>{{ p.situacao }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="solucao">Solução</label>
+                                    <textarea id="solucao" name="solucao" class="form-control" readonly>{{ p.solucao }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                    <a href="{{ path_for('problema', {'id': p.id}) }}" class="btn btn-default">Cancelar</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <i class="fa fa-user"></i> {{ p.criador }}<br>
+                    <i class="fa fa-calendar"></i> Criado em {{ p.created_at }} atualizado em {{ p.updated_at }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

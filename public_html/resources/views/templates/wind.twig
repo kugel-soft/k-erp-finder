@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>KInfo Manager | Gerenciador de Informações Kugel</title>
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="{{ base_url() }}/css/twig.css">
+    
+</head>
+<body>
+    {% include 'templates/partials/navigation.twig' %}
+    
+    <div class="container">
+        {% include 'templates/partials/flash.twig' %}
+        <!-- Header -->
+        <header>
+            <div class="row">
+                <div class="col-sm-12">
+                    <form id="form" action="{{ path_for('pesquisar') }}" method="GET">
+                        <div class="input-group">
+                            <input class="form-control" type="text" id="termo" name="termo" placeholder="Termo de pesquisa" value="{{ termo }}">
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Pesquisar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </header>
+        
+        <hr>
+        
+        <div class="row">
+            <!-- Main contente -->
+            <div class="col-sm-9">
+                {% block content %} {% endblock %}
+            </div>
+            
+            <!-- Right sidebar -->
+            <div class="col-sm-3">
+                <!-- Tags -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Tags
+                            </div>
+                            <div class="panel-body">
+                                {% for tag in tags %}
+                                    <a href="{{ path_for('tag', {'id': tag.id}) }}"><span class="label label-success">{{ tag.nome }}</span></a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabelas -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Tabelas
+                            </div>
+                            <div class="panel-body">
+                                {% for tabela in tabelas %}
+                                    <a href="{{ path_for('tabela', {'id': tabela.id}) }}"><span class="label label-success">{{ tabela.nome }}</span></a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Categorias -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Categorias
+                            </div>
+                            <ul class="list-group">
+                            {% for categoria in categorias %}
+                                <li class="list-group-item"><a href="{{ path_for('categoria', {'id': categoria.id}) }}">{{ categoria.nome }}</a></li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Novo Item</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <form action="{{ path_for('novo') }}" method="POST">
+                                <div class="form-group{{ errors.titulo ? ' has-error' : '' }}">
+                                    <label class="control-label" for="titulo">Título *</label>
+                                    <input type="text" id="titulo" name="titulo" class="form-control" required value="{{ old.titulo }}">
+                                    {% if errors.titulo %}
+                                        <span class="help-block">{{ errors.titulo | first }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group{{ errors.categoria ? ' has-error' : '' }}">
+                                    <label class="control-label" for="categoria">Categoria</label>
+                                    <input type="text" id="categoria" name="categoria" class="form-control" required value="{{ old.categoria }}">
+                                    {% if errors.categoria %}
+                                        <span class="help-block">{{ errors.categoria | first }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group{{ errors.tags ? ' has-error' : '' }}">
+                                    <label class="control-label" for="tags">Tags (separadas por vírgula) *</label>
+                                    <input type="text" id="tags" name="tags" class="form-control" required value="{{ old.tags }}">
+                                    {% if errors.tags %}
+                                        <span class="help-block">{{ errors.tags | first }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group{{ errors.tabelas ? ' has-error' : '' }}">
+                                    <label class="control-label" for="tabelas">Tabelas envolvidas (separadas por vírgula)</label>
+                                    <input type="text" id="tabelas" name="tabelas" class="form-control" value="{{ old.tabelas }}">
+                                    {% if errors.tabelas %}
+                                        <span class="help-block">{{ errors.tabelas | first }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group{{ errors.situacao ? ' has-error' : '' }}">
+                                    <label class="control-label" for="situacao">Situação *</label>
+                                    <textarea id="situacao" name="situacao" class="form-control" required>{{ old.situacao }}</textarea>
+                                    {% if errors.situacao %}
+                                        <span class="help-block">{{ errors.situacao | first }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group{{ errors.solucao ? ' has-error' : '' }}">
+                                    <label class="control-label" for="solucao">Solução *</label>
+                                    <textarea id="solucao" name="solucao" class="form-control" required>{{ old.solucao }}</textarea>
+                                    {% if errors.solucao %}
+                                        <span class="help-block">{{ errors.solucao | first }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group{{ errors.criador ? ' has-error' : '' }}">
+                                    <label class="control-label" for="criador">Criado por *</label>
+                                    <select id="criador" name="criador" class="form-control" required>
+                                        <option value="" {{ old.criador == ''? 'selected' : '' }}>Selecione</option>
+                                        <option value="ademar"   {{ old.criador == 'ademar'? 'selected' : '' }}>Ademar</option>
+                                        <option value="andre"    {{ old.criador == 'andre'? 'selected' : '' }}>André</option>
+                                        <option value="daniel"   {{ old.criador == 'daniel'? 'selected' : '' }}>Daniel</option>
+                                        <option value="gustavo"  {{ old.criador == 'gustavo'? 'selected' : '' }}>Gustavo</option>
+                                        <option value="izaura"   {{ old.criador == 'izaura'? 'selected' : '' }}>Izaura</option>
+                                        <option value="renato"   {{ old.criador == 'renato'? 'selected' : '' }}>Renato</option>
+                                        <option value="ricardo"  {{ old.criador == 'ricardo'? 'selected' : '' }}>Ricardo</option>
+                                        <option value="rodrigob" {{ old.criador == 'rodrigob'? 'selected' : '' }}>Rodrigo Bona</option>
+                                        <option value="rodrigoc" {{ old.criador == 'rodrigoc'? 'selected' : '' }}>Rodrigo Cruz</option>
+                                        <option value="sieghard" {{ old.criador == 'sieghard'? 'selected' : '' }}>Sieghard</option>
+                                        <option value="valdecir" {{ old.criador == 'valdecir'? 'selected' : '' }}>Valdecir</option>
+                                    </select>
+                                    {% if errors.criador %}
+                                        <span class="help-block">{{ errors.criador | first }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-success">Salvar</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal end -->
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>

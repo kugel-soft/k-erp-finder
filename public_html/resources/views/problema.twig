@@ -1,0 +1,52 @@
+{% extends 'templates/wind.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p>{{ problema.titulo }} - [{{ problema.categoria.nome }}]</p>
+                                <span>
+                                    <i class="fa fa-tag"></i>
+                                    {% for tag in problema.tags() %}
+                                        <span class="label label-success">{{ tag.nome }}</span>
+                                    {% endfor %}
+                                </span>
+                                <span>
+                                    <i class="fa fa-database"></i>
+                                    {% for tabela in problema.tabelas() %}
+                                        <span class="label label-success">{{ tabela.nome }}</span>
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="panel-body">
+                        <h4>Situação</h4>
+                        <p>{{ problema.situacao }}</p>
+                        
+                        <h4>Possível solução</h4>
+                        <p>{{ problema.solucao }}</p>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <i class="fa fa-user"></i> {{ problema.criador }}<br>
+                                <i class="fa fa-calendar"></i> Criado em {{ problema.created_at }} atualizado em {{ problema.updated_at }}
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="pull-right">
+                                    <a href="{{ path_for('alterar', {'id': problema.id}) }}" class="btn btn-default">Alterar</a>
+                                    <a href="{{ path_for('excluir', {'id': problema.id}) }}" class="btn btn-danger">Excluir</a>
+                                    <a href="{{ path_for('home') }}" class="btn btn-default">Voltar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+{% endblock %}

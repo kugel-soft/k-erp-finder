@@ -1,0 +1,13 @@
+body {
+    padding-top: 80px;
+    padding-bottom: 40px;
+}
+
+time {
+    font-size: 11px;
+}
+
+.panel-heading i.fa  {
+    min-width: 30px;
+    padding-left: 10px;
+}

@@ -1,0 +1,31 @@
+{% extends 'templates/wind.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>KInfo Manager</h3>
+            <p>Um sistema para gerenciar informações sobre erros, problemas, anotações ou dicas sobre uma determinada situação.</p>
+            
+            <br>
+            
+            <h3>Como usar</h3>
+            <p>O funcionamento do sistema é bem parecido com o de um blog, onde cada post é um item. Cada item tem opcionalmente
+               sua categoria, e obrigatóriamente pelo menos uma tag.</p>
+            <p>As tags são as palavras chaves que ligam aos itens cadastrados. O mesmo funcionamento se dá para as tabelas.
+               Quando são informadas tags e tabelas, é possível pesquisar por estes dados clicando na tag ou na tabela,
+               a partir do painel do lado direito.</p>
+            <p>As tags e as tabelas são dados dinâmicos, que são cadastrados quando inseridos pela primeira vez, e ao excluir
+               ou alterar, e não existindo nenhum outro item vinculado a ele, será excluído.</p>
+            <br>
+            
+            <h3>Pesquisa</h3>
+            <p>O termo informado na pesquisa é usado para pesquisar nos títulos, e no corpo do item. Para tabelas, categorias e tags
+               deve ser usado o menu lateral direito.</p>
+               
+            <br>
+            
+            <h4>Versão</h4>
+            <p><a href="https://github.com/RMCampos/KInfoManager/README.md" target="_blank">29.05.2017a</a></p>
+        </div>
+    </div>
+{% endblock %}
