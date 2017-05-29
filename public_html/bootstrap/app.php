@@ -83,6 +83,13 @@ $container['view'] = function($container) {
     return $view;
 };
 
+$container['notFoundHandler'] = function($container) {
+    return function($request, $response) use ($container) {
+        $container->view->render($response, 'errors/404.twig');
+        return $response->withStatus(404);
+    };
+};
+
 $container['validator'] = function($container) {
     return new \Kugel\Validation\Validator;
 };
