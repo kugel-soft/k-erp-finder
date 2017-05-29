@@ -12,3 +12,4 @@ $app->get('/Alterar/{id}', 'HomeController:getAlterar')->setName('alterar');
 $app->post('/Alterar/{id}', 'HomeController:postAlterar');
 $app->get('/Excluir/{id}', 'HomeController:getExcluir')->setName('excluir');
 $app->post('/Excluir/{id}', 'HomeController:postExcluir');
+$app->get('/livesearch/{termo}', 'HomeController:getLiveSearch');

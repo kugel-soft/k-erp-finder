@@ -19,13 +19,14 @@
         <header>
             <div class="row">
                 <div class="col-sm-12">
-                    <form id="form" action="{{ path_for('pesquisar') }}" method="GET">
+                    <form id="form" action="{{ path_for('pesquisar') }}" method="GET" autocomplete="off">
                         <div class="input-group">
-                            <input class="form-control" type="text" id="termo" name="termo" placeholder="Termo de pesquisa" value="{{ termo }}">
+                            <input class="form-control" type="text" id="termo" name="termo" placeholder="Termo de pesquisa" value="{{ termo }}" onkeyup="livesearch(this.value)">
                             <div class="input-group-btn">
                                 <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Pesquisar</button>
                             </div>
                         </div>
+                        <div id="livesearch"></div>
                     </form>
                 </div>
             </div>
@@ -182,5 +183,19 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script>
+        function livesearch(str) {
+            if (str.length == 0) {
+                $("#livesearch").html("");
+                $("$livesearch").css("border", "0px");
+                return;
+            }
+            
+            $.get('/livesearch/' + str, function(data) {
+                $("#livesearch").html(data);
+                $("$livesearch").css("border", "1px solid #A5ACB2");
+            });
+        }
+    </script>
 </body>
 </html>

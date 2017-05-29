@@ -22,7 +22,6 @@ class HomeController extends Controller {
         return $this->view->render($response, 'sobre.twig', compact('problemas'));
     }
     
-    
     public function postNovo($request, $response) {
         $validation = $this->validator->validate($request, [
             'titulo' => v::notEmpty()->stringType()->length(10, 255),
@@ -298,5 +297,27 @@ class HomeController extends Controller {
         
         $this->flash->addMessage('success', 'Item excluído com sucesso!');
         return $response->withRedirect($this->router->pathFor('home'));
+    }
+    
+    public function getLiveSearch($request, $response) {
+        $termo = $request->getAttribute('termo');
+        
+        $problemas = Problema::where('titulo', 'like', '%'.$termo.'%')
+            ->orWhere('situacao', 'like', '%'.$termo.'%')
+            ->orWhere('solucao', 'like', '%'.$termo.'%')
+            ->orderBy('titulo')
+            ->get();
+            
+        if (count($problemas) == 0) {
+            return "<br>Nenhum resultado!";
+        }
+        else {
+            $data = '<br>';
+            foreach ($problemas as $p) {
+                $data .= '<a href="/Problema/' . $p->id . '">' . $p->titulo . '</a><br>';
+            }
+            return $data;
+        }
+        
     }
 }
