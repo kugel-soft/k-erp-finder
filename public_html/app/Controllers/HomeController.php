@@ -101,8 +101,8 @@ class HomeController extends Controller {
         $termo = $request->getParam('termo');
         
         $problemas = Problema::where('titulo', 'like', '%'.$termo.'%')
-            ->orWhere('situacao', 'like', '%'.$request->getParam('termo').'%')
-            ->orWhere('solucao', 'like', '%'.$request->getParam('termo').'%')
+            ->orWhere('situacao', 'like', '%'.$termo.'%')
+            ->orWhere('solucao', 'like', '%'.$termo.'%')
             ->orderBy('titulo')
             ->paginate(5)
             ->appends($request->getParams());
