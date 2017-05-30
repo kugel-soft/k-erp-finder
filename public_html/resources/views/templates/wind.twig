@@ -92,93 +92,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Novo Item</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <form action="{{ path_for('novo') }}" method="POST">
-                                <div class="form-group{{ errors.titulo ? ' has-error' : '' }}">
-                                    <label class="control-label" for="titulo">Título *</label>
-                                    <input type="text" id="titulo" name="titulo" class="form-control" required value="{{ old.titulo }}">
-                                    {% if errors.titulo %}
-                                        <span class="help-block">{{ errors.titulo | first }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="form-group{{ errors.categoria ? ' has-error' : '' }}">
-                                    <label class="control-label" for="categoria">Categoria</label>
-                                    <input type="text" id="categoria" name="categoria" class="form-control" required value="{{ old.categoria }}">
-                                    {% if errors.categoria %}
-                                        <span class="help-block">{{ errors.categoria | first }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="form-group{{ errors.tags ? ' has-error' : '' }}">
-                                    <label class="control-label" for="tags">Tags (separadas por vírgula) *</label>
-                                    <input type="text" id="tags" name="tags" class="form-control" required value="{{ old.tags }}">
-                                    {% if errors.tags %}
-                                        <span class="help-block">{{ errors.tags | first }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="form-group{{ errors.tabelas ? ' has-error' : '' }}">
-                                    <label class="control-label" for="tabelas">Tabelas envolvidas (separadas por vírgula)</label>
-                                    <input type="text" id="tabelas" name="tabelas" class="form-control" value="{{ old.tabelas }}">
-                                    {% if errors.tabelas %}
-                                        <span class="help-block">{{ errors.tabelas | first }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="form-group{{ errors.situacao ? ' has-error' : '' }}">
-                                    <label class="control-label" for="situacao">Situação *</label>
-                                    <textarea id="situacao" name="situacao" class="form-control" required>{{ old.situacao }}</textarea>
-                                    {% if errors.situacao %}
-                                        <span class="help-block">{{ errors.situacao | first }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="form-group{{ errors.solucao ? ' has-error' : '' }}">
-                                    <label class="control-label" for="solucao">Solução *</label>
-                                    <textarea id="solucao" name="solucao" class="form-control" required>{{ old.solucao }}</textarea>
-                                    {% if errors.solucao %}
-                                        <span class="help-block">{{ errors.solucao | first }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="form-group{{ errors.criador ? ' has-error' : '' }}">
-                                    <label class="control-label" for="criador">Criado por *</label>
-                                    <select id="criador" name="criador" class="form-control" required>
-                                        <option value="" {{ old.criador == ''? 'selected' : '' }}>Selecione</option>
-                                        <option value="ademar"   {{ old.criador == 'ademar'? 'selected' : '' }}>Ademar</option>
-                                        <option value="andre"    {{ old.criador == 'andre'? 'selected' : '' }}>André</option>
-                                        <option value="daniel"   {{ old.criador == 'daniel'? 'selected' : '' }}>Daniel</option>
-                                        <option value="gustavo"  {{ old.criador == 'gustavo'? 'selected' : '' }}>Gustavo</option>
-                                        <option value="izaura"   {{ old.criador == 'izaura'? 'selected' : '' }}>Izaura</option>
-                                        <option value="renato"   {{ old.criador == 'renato'? 'selected' : '' }}>Renato</option>
-                                        <option value="ricardo"  {{ old.criador == 'ricardo'? 'selected' : '' }}>Ricardo</option>
-                                        <option value="rodrigob" {{ old.criador == 'rodrigob'? 'selected' : '' }}>Rodrigo Bona</option>
-                                        <option value="rodrigoc" {{ old.criador == 'rodrigoc'? 'selected' : '' }}>Rodrigo Cruz</option>
-                                        <option value="sieghard" {{ old.criador == 'sieghard'? 'selected' : '' }}>Sieghard</option>
-                                        <option value="valdecir" {{ old.criador == 'valdecir'? 'selected' : '' }}>Valdecir</option>
-                                    </select>
-                                    {% if errors.criador %}
-                                        <span class="help-block">{{ errors.criador | first }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-success">Salvar</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal end -->
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
@@ -187,13 +100,22 @@
         function livesearch(str) {
             if (str.length == 0) {
                 $("#livesearch").html("");
-                $("$livesearch").css("border", "0px");
                 return;
             }
             
             $.get('/livesearch/' + str, function(data) {
                 $("#livesearch").html(data);
-                $("$livesearch").css("border", "1px solid #A5ACB2");
+            });
+        }
+        
+        function liveselect(str) {
+            if (str.length == 0) {
+                $("#liveselect").html("");
+                return;
+            }
+            
+            $.get('/liveselect/' + str, function(data) {
+                $("#liveselect").html(data);
             });
         }
     </script>

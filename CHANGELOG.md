@@ -1,3 +1,10 @@
+### 30.05.2017a ###
+- Adicionado transação nas operações de BD.
+- Movido novo item do modal para uma página.
+- Ao adicionar novo item, adicionado live search na categoria.
+- Melhorado layout da pesquisa live search para usar list group do bootstrap.
+- Correção de bugs.
+
 ### 29.05.2017c ###
 - Adicionado live search, ao digitar já vai pesquisando. Sugestão do Rodrigo Cruz.
 

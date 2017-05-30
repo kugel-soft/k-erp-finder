@@ -22,9 +22,13 @@ class HomeController extends Controller {
         return $this->view->render($response, 'sobre.twig', compact('problemas'));
     }
     
+    public function getNovo($request, $response) {
+        return $this->view->render($response, 'novo.twig', compact('problemas'));
+    }
+    
     public function postNovo($request, $response) {
         $validation = $this->validator->validate($request, [
-            'titulo' => v::notEmpty()->stringType()->length(10, 255),
+            'titulo' => v::notEmpty()->stringType()->length(1, 255),
             'tags' => v::notEmpty()->stringType(),
             'situacao' => v::notEmpty()->stringType()->length(10, 1000),
             'solucao' => v::notEmpty()->stringType()->length(10, 1000),
@@ -33,68 +37,76 @@ class HomeController extends Controller {
         
         if ($validation->failed()) {
             $this->flash->addMessage('error', 'Dados inválidos!');
-            return $response->withRedirect($this->router->pathFor('home'));
+            return $response->withRedirect($this->router->pathFor('novo'));
         }
         
-        $categoriaId = NULL;
-        if ($request->getParam('categoria') != "") {
-            $cat = Categoria::where('nome', $request->getParam('categoria'));
-            if ($cat) {
-                $categoriaId = $cat->id;
+        try {
+            $this->db->getConnection()->getPdo()->beginTransaction();
+        
+            // categoria
+            $categoriaId = NULL;
+            $categoria = Categoria::where('nome', $request->getParam('categoria'))->first();
+            if ($categoria) {
+                $categoriaId = $categoria->id;
             }
             else {
-                $cat = Categoria::create([
+                $novaCategoria = Categoria::create([
                     'nome' => $request->getParam('categoria')
                 ]);
-                $categoriaId = $cat->id;
+                $categoriaId = $novaCategoria->id;
             }
-        }
-        
-        // problema
-        $problema = Problema::create([
-            'titulo' => $request->getParam('titulo'),
-            'situacao' => $request->getParam('situacao'),
-            'solucao' => $request->getParam('solucao'),
-            'criador' => $request->getParam('criador'),
-            'categoria_id' => $categoriaId,
-        ]);
-        
-        // tags
-        $tags = explode(",", $request->getParam('tags'));
-        foreach ($tags as $t) {
-            $tag = Tag::where('nome', 'like', '%'.trim($t).'%')->first();
-            if (!$tag) {
-                $tag = Tag::create([
-                    'nome' => trim($t),
-                ]);
-                
-                // relacionamento
-                $pt = ProblemaTag::create([
-                    'problema_id' => $problema->id,
-                    'tag_id' => $tag->id,
-                ]);
+            
+            // problema
+            $problema = Problema::create([
+                'titulo'       => $request->getParam('titulo'),
+                'situacao'     => $request->getParam('situacao'),
+                'solucao'      => $request->getParam('solucao'),
+                'criador'      => $request->getParam('criador'),
+                'categoria_id' => $categoriaId,
+            ]);
+            
+            // tags
+            $tags = explode(",", $request->getParam('tags'));
+            foreach ($tags as $t) {
+                $tag = Tag::where('nome', 'like', '%'.trim($t).'%')->first();
+                if (!$tag) {
+                    $tag = Tag::create([
+                        'nome' => trim($t),
+                    ]);
+                    
+                    // relacionamento
+                    $pt = ProblemaTag::create([
+                        'problema_id' => $problema->id,
+                        'tag_id' => $tag->id,
+                    ]);
+                }
             }
-        }
-        
-        // tabelas
-        $tabelas = explode(",", $request->getParam('tabelas'));
-        foreach ($tabelas as $t) {
-            $tabela = Tabela::where('nome', 'like', '%'.trim($t).'%')->first();
-            if (!$tabela) {
-                $tabela = Tabela::create([
-                    'nome' => trim($t),
-                ]);
-                
-                // relacionamento
-                $pt = ProblemaTabela::create([
-                    'problema_id' => $problema->id,
-                    'tabela_id' => $tabela->id,
-                ]);
+            
+            // tabelas
+            $tabelas = explode(",", $request->getParam('tabelas'));
+            foreach ($tabelas as $t) {
+                $tabela = Tabela::where('nome', 'like', '%'.trim($t).'%')->first();
+                if (!$tabela) {
+                    $tabela = Tabela::create([
+                        'nome' => trim($t),
+                    ]);
+                    
+                    // relacionamento
+                    $pt = ProblemaTabela::create([
+                        'problema_id' => $problema->id,
+                        'tabela_id' => $tabela->id,
+                    ]);
+                }
             }
+            
+            $this->db->getConnection()->getPdo()->commit();
+            $this->flash->addMessage('success', 'Item adicionado com sucesso!');
+            return $response->withRedirect($this->router->pathFor('home'));
         }
-        
-        $this->flash->addMessage('success', 'Item adicionado com sucesso!');
-        return $response->withRedirect($this->router->pathFor('home'));
+        catch (Excepion $e) {
+            $this->db->getConnection()->getPdo()->rollback();
+            $this->flash->addMessage('error', 'Erro ao cadastrar imóvel: ' . $e->getMessage());
+        }
     }
     
     public function getPesquisar($request, $response) {
@@ -162,83 +174,92 @@ class HomeController extends Controller {
             return $response->withRedirect($this->router->pathFor('alterar', ['id' => $request->getAttribute('id')]));
         }
         
-        // problema
-        $problema = Problema::find($request->getAttribute('id'));
-        if (!$problema) {
-            $this->flash->addMessage('error', 'Item não encontrado para alteração!');
-            return $response->withRedirect($this->router->pathFor('alterar', ['id' => $request->getAttribute('id')]));
-        }
+        try {
+            $this->db->getConnection()->getPdo()->beginTransaction();
         
-        $problema->titulo = $request->getParam('titulo');
-        $problema->situacao = $request->getParam('situacao');
-        $problema->solucao = $request->getParam('solucao');
-        $problema->save();
-        
-        // tags
-        ProblemaTag::where('problema_id', $problema->id)->delete();
-        $tags = explode(",", $request->getParam('tags'));
-        foreach ($tags as $t) {
-            $tag = Tag::where('nome', trim($t))->first();
-            if (!$tag) {
-                $tag = Tag::create([
-                    'nome' => trim($t),
+            // problema
+            $problema = Problema::find($request->getAttribute('id'));
+            if (!$problema) {
+                $this->flash->addMessage('error', 'Item não encontrado para alteração!');
+                return $response->withRedirect($this->router->pathFor('alterar', ['id' => $request->getAttribute('id')]));
+            }
+            
+            $problema->titulo = $request->getParam('titulo');
+            $problema->situacao = $request->getParam('situacao');
+            $problema->solucao = $request->getParam('solucao');
+            $problema->save();
+            
+            // tags
+            ProblemaTag::where('problema_id', $problema->id)->delete();
+            $tags = explode(",", $request->getParam('tags'));
+            foreach ($tags as $t) {
+                $tag = Tag::where('nome', trim($t))->first();
+                if (!$tag) {
+                    $tag = Tag::create([
+                        'nome' => trim($t),
+                    ]);
+                }
+                
+                // relacionamento
+                $pt = ProblemaTag::create([
+                    'problema_id' => $problema->id,
+                    'tag_id' => $tag->id,
+                ]);
+            }
+            // Limpar tags
+            //delete from tags where id not in (select tag_id from problemas_tags join problemas on (problemas.id = problemas_tags.problema_id));
+            $tagsId = ProblemaTag::join('problemas', 'problemas.id', '=', 'problemas_tags.problema_id')->select(['tag_id'])->get();
+            $tagsIn = [];
+            foreach ($tagsId as $t) {
+                array_push($tagsIn, $t->tag_id);
+            }
+            $tagsCadastro = Tag::get();
+            foreach ($tagsCadastro as $tc) {
+                if (!in_array($tc->id, $tagsIn)) {
+                    $tc->delete();
+                }
+            }
+            
+            // tabelas
+            ProblemaTabela::where('problema_id', $problema->id)->delete();
+            $tabelas = explode(",", $request->getParam('tabelas'));
+            foreach ($tabelas as $t) {
+                $tabela = Tabela::where('nome', trim($t))->first();
+                if (!$tabela) {
+                    $tabela = Tabela::create([
+                        'nome' => trim($t),
+                    ]);
+                }
+                
+                // relacionamento
+                $pt = ProblemaTabela::create([
+                    'problema_id' => $problema->id,
+                    'tabela_id' => $tabela->id,
                 ]);
             }
             
-            // relacionamento
-            $pt = ProblemaTag::create([
-                'problema_id' => $problema->id,
-                'tag_id' => $tag->id,
-            ]);
-        }
-        // Limpar tags
-        //delete from tags where id not in (select tag_id from problemas_tags join problemas on (problemas.id = problemas_tags.problema_id));
-        $tagsId = ProblemaTag::join('problemas', 'problemas.id', '=', 'problemas_tags.problema_id')->select(['tag_id'])->get();
-        $tagsIn = [];
-        foreach ($tagsId as $t) {
-            array_push($tagsIn, $t->tag_id);
-        }
-        $tagsCadastro = Tag::get();
-        foreach ($tagsCadastro as $tc) {
-            if (!in_array($tc->id, $tagsIn)) {
-                $tc->delete();
+            // Limpar tabelas
+            //delete from tabelas where id not in (select tabela_id from problemas_tabelas join problemas on (problemas.id = problemas_tabelas.problema_id));
+            $tabelasId = ProblemaTabela::join('problemas', 'problemas.id', '=', 'problemas_tabelas.problema_id')->select(['tabela_id'])->get();
+            $tabelasIn = [];
+            foreach ($tabelasId as $t) {
+                array_push($tabelasIn, $t->tabela_id);
             }
-        }
-        
-        // tabelas
-        ProblemaTabela::where('problema_id', $problema->id)->delete();
-        $tabelas = explode(",", $request->getParam('tabelas'));
-        foreach ($tabelas as $t) {
-            $tabela = Tabela::where('nome', trim($t))->first();
-            if (!$tabela) {
-                $tabela = Tabela::create([
-                    'nome' => trim($t),
-                ]);
+            $tabelasCadastro = Tabela::get();
+            foreach ($tabelasCadastro as $tc) {
+                if (!in_array($tc->id, $tabelasIn)) {
+                    $tc->delete();
+                }
             }
             
-            // relacionamento
-            $pt = ProblemaTabela::create([
-                'problema_id' => $problema->id,
-                'tabela_id' => $tabela->id,
-            ]);
+            $this->db->getConnection()->getPdo()->commit();
+            $this->flash->addMessage('success', 'Item alterado com sucesso!');
+            return $response->withRedirect($this->router->pathFor('problema', ['id' => $request->getAttribute('id')]));
         }
-        
-        // Limpar tabelas
-        //delete from tabelas where id not in (select tabela_id from problemas_tabelas join problemas on (problemas.id = problemas_tabelas.problema_id));
-        $tabelasId = ProblemaTabela::join('problemas', 'problemas.id', '=', 'problemas_tabelas.problema_id')->select(['tabela_id'])->get();
-        $tabelasIn = [];
-        foreach ($tabelasId as $t) {
-            array_push($tabelasIn, $t->tabela_id);
+        catch (Excepion $e) {
+            $this->db->getConnection()->getPdo()->rollback();
+            $this->flash->addMessage('error', 'Erro ao cadastrar imóvel: ' . $e->getMessage());
         }
-        $tabelasCadastro = Tabela::get();
-        foreach ($tabelasCadastro as $tc) {
-            if (!in_array($tc->id, $tabelasIn)) {
-                $tc->delete();
-            }
-        }
-        
-        $this->flash->addMessage('success', 'Item alterado com sucesso!');
-        return $response->withRedirect($this->router->pathFor('problema', ['id' => $request->getAttribute('id')]));
     }
     
     public function getExcluir($request, $response) {
@@ -259,44 +280,63 @@ class HomeController extends Controller {
             return $response->withRedirect($this->router->pathFor('home'));
         }
         
-        // tags
-        ProblemaTag::where('problema_id', $problema->id)->delete();
+        try {
+            $this->db->getConnection()->getPdo()->beginTransaction();
         
-        // Limpar tags
-        //delete from tags where id not in (select tag_id from problemas_tags join problemas on (problemas.id = problemas_tags.problema_id));
-        $tagsId = ProblemaTag::join('problemas', 'problemas.id', '=', 'problemas_tags.problema_id')->select(['tag_id'])->get();
-        $tagsIn = [];
-        foreach ($tagsId as $t) {
-            array_push($tagsIn, $t->tag_id);
-        }
-        $tagsCadastro = Tag::get();
-        foreach ($tagsCadastro as $tc) {
-            if (!in_array($tc->id, $tagsIn)) {
-                $tc->delete();
+            // tags
+            ProblemaTag::where('problema_id', $problema->id)->delete();
+            
+            // Limpar tags
+            //delete from tags where id not in (select tag_id from problemas_tags join problemas on (problemas.id = problemas_tags.problema_id));
+            $tagsId = ProblemaTag::join('problemas', 'problemas.id', '=', 'problemas_tags.problema_id')->select(['tag_id'])->get();
+            $tagsIn = [];
+            foreach ($tagsId as $t) {
+                array_push($tagsIn, $t->tag_id);
             }
-        }
-        
-        // tabelas
-        ProblemaTabela::where('problema_id', $problema->id)->delete();
-        
-        // Limpar tabelas
-        //delete from tabelas where id not in (select tabela_id from problemas_tabelas join problemas on (problemas.id = problemas_tabelas.problema_id));
-        $tabelasId = ProblemaTabela::join('problemas', 'problemas.id', '=', 'problemas_tabelas.problema_id')->select(['tabela_id'])->get();
-        $tabelasIn = [];
-        foreach ($tabelasId as $t) {
-            array_push($tabelasIn, $t->tabela_id);
-        }
-        $tabelasCadastro = Tabela::get();
-        foreach ($tabelasCadastro as $tc) {
-            if (!in_array($tc->id, $tabelasIn)) {
-                $tc->delete();
+            $tagsCadastro = Tag::get();
+            foreach ($tagsCadastro as $tc) {
+                if (!in_array($tc->id, $tagsIn)) {
+                    $tc->delete();
+                }
             }
+            
+            // tabelas
+            ProblemaTabela::where('problema_id', $problema->id)->delete();
+            
+            // Limpar tabelas
+            //delete from tabelas where id not in (select tabela_id from problemas_tabelas join problemas on (problemas.id = problemas_tabelas.problema_id));
+            $tabelasId = ProblemaTabela::join('problemas', 'problemas.id', '=', 'problemas_tabelas.problema_id')->select(['tabela_id'])->get();
+            $tabelasIn = [];
+            foreach ($tabelasId as $t) {
+                array_push($tabelasIn, $t->tabela_id);
+            }
+            $tabelasCadastro = Tabela::get();
+            foreach ($tabelasCadastro as $tc) {
+                if (!in_array($tc->id, $tabelasIn)) {
+                    $tc->delete();
+                }
+            }
+            
+            $problema->delete();
+            
+            // Limpar categorias
+            // select * from categorias where id not in (select distinct categoria_id from problemas);
+            $categoriasList = Categoria::get();
+            foreach ($categoriasList as $categoriaBd) {
+                $deletar = Problema::where('categoria_id', $categoriaBd->id)->count() === 0;
+                if ($deletar) {
+                    $categoriaBd->delete();
+                }
+            }
+            
+            $this->db->getConnection()->getPdo()->commit();
+            $this->flash->addMessage('success', 'Item excluído com sucesso!');
+            return $response->withRedirect($this->router->pathFor('home'));
         }
-        
-        $problema->delete();
-        
-        $this->flash->addMessage('success', 'Item excluído com sucesso!');
-        return $response->withRedirect($this->router->pathFor('home'));
+        catch (Excepion $e) {
+            $this->db->getConnection()->getPdo()->rollback();
+            $this->flash->addMessage('error', 'Erro ao cadastrar imóvel: ' . $e->getMessage());
+        }
     }
     
     public function getLiveSearch($request, $response) {
@@ -309,13 +349,35 @@ class HomeController extends Controller {
             ->get();
             
         if (count($problemas) == 0) {
-            return "<br>Nenhum resultado!";
+            return '<ul class="list-group"><li class="list-group-item">Nenhum resultado!</li></ul>';
         }
         else {
-            $data = '<br>';
+            $data = '<ul class="list-group">';
             foreach ($problemas as $p) {
-                $data .= '<a href="/Problema/' . $p->id . '">' . $p->titulo . '</a><br>';
+                $data .= '<li class="list-group-item"><a href="/Problema/' . $p->id . '">' . $p->titulo . '</a></li>';
             }
+            $data .= '</ul>';
+            return $data;
+        }
+        
+    }
+    
+    public function getLiveSelect($request, $response) {
+        $termo = $request->getAttribute('termo');
+        
+        $categorias = Categoria::where('nome', 'like', '%'.$termo.'%')
+            ->orderBy('nome')
+            ->get();
+            
+        if (count($categorias) == 0) {
+            return '<ul class="list-group"><li class="list-group-item"><a href="javascript:selectItem(\'' . ucfirst($termo) . '\')">Novo item: ' . ucfirst($termo) . '</a></li></ul>';
+        }
+        else {
+            $data = '<ul class="list-group">';
+            foreach ($categorias as $c) {
+                $data .= '<li class="list-group-item"><a href="javascript:selectItem(\'' . $c->nome . '\')">' . $c->nome . '</a></li>';
+            }
+            $data .= '</ul>';
             return $data;
         }
         
