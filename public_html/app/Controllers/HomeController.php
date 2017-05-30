@@ -31,7 +31,7 @@ class HomeController extends Controller {
             'titulo' => v::notEmpty()->stringType()->length(1, 255),
             'tags' => v::notEmpty()->stringType(),
             'situacao' => v::notEmpty()->stringType()->length(10, 1000),
-            'solucao' => v::notEmpty()->stringType()->length(10, 1000),
+            'solucao' => v::notEmpty()->stringType()->length(10, 5000),
             'criador' => v::notEmpty()->stringType()->length(1, 30),
         ]);
         
@@ -166,7 +166,7 @@ class HomeController extends Controller {
         $validation = $this->validator->validate($request, [
             'titulo' => v::notEmpty()->stringType()->length(10, 255),
             'situacao' => v::notEmpty()->stringType()->length(10, 1000),
-            'solucao' => v::notEmpty()->stringType()->length(10, 1000),
+            'solucao' => v::notEmpty()->stringType()->length(10, 5000),
         ]);
         
         if ($validation->failed()) {
