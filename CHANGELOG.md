@@ -1,3 +1,6 @@
+### 30.05.2017c ###
+- Alterado layout dos itens.
+
 ### 30.05.2017b ###
 - Alterado tamanho do campo de solução para até 5000 caracteres.
 

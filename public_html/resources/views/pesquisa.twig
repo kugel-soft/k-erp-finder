@@ -26,14 +26,23 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            
                         </div>
+                        
                         <div class="panel-body">
                             <h4>Situação</h4>
-                            <p>{{ item.situacao }}</p>
+                            <div class="source-code-situacao">
+                                <p>{{ item.situacao }}</p>
+                            </div>
                             
                             <h4>Possível solução</h4>
-                            <p>{{ item.solucao }}</p>
+                            <div class="source-code-solucao">
+                                <p>
+                                    {{ item.solucao|length > 80 ? item.solucao|slice(0, 80   ) ~ '...' : item.solucao }}
+                                    {% if item.solucao|length > 80 %}
+                                        <span class="label label-default"><a href="{{ path_for('problema', {'id': item.id}) }}" class="ver-mais-link">Ver item</a></span>
+                                    {% endif %}
+                                </p>
+                            </div>
                         </div>
                         <div class="panel-footer">
                             <i class="fa fa-user"></i> {{ item.criador }}<br>

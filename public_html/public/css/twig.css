@@ -11,3 +11,24 @@ time {
     min-width: 30px;
     padding-left: 10px;
 }
+.source-code-situacao {
+    font-family: "Courier New";
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    border-left: 3px solid red;
+    padding: 5px 5px 5px 15px;
+}
+.source-code-solucao {
+    font-family: "Courier New";
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    border-left: 3px solid blue;
+    padding: 5px 5px 5px 15px;
+}
+.ver-mais-link {
+    color: white;
+}
+
+.ver-mais-link:hover {
+    color: lightblue;
+}
