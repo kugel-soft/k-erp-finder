@@ -124,6 +124,10 @@ class HomeController extends Controller {
     
     public function getProblema($request, $response) {
         $problema = Problema::find($request->getAttribute('id'));
+        if (!$problema) {
+            $this->flash->addMessage('error', 'Item não encontrado! Tente a pesquisa!');
+            return $response->withRedirect($this->router->pathFor('home'));
+        }
         return $this->view->render($response, 'problema.twig', compact('problema'));
     }
     
@@ -186,7 +190,7 @@ class HomeController extends Controller {
             
             $problema->titulo = $request->getParam('titulo');
             $problema->situacao = $request->getParam('situacao');
-            $problema->solucao = $request->getParam('solucao');
+            $problema->solucao = preg_replace("/\r\n|\r|\n/", '<br>', $request->getParam('solucao'));
             $problema->save();
             
             // tags

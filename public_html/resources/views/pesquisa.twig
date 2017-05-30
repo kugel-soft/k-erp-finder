@@ -37,9 +37,9 @@
                             <h4>Possível solução</h4>
                             <div class="source-code-solucao">
                                 <p>
-                                    {{ item.solucao|length > 80 ? item.solucao|slice(0, 80   ) ~ '...' : item.solucao }}
+                                    {{ item.solucao|length > 80 ? item.solucao|slice(0, 60)|raw : item.solucao|raw }}
                                     {% if item.solucao|length > 80 %}
-                                        <span class="label label-default"><a href="{{ path_for('problema', {'id': item.id}) }}" class="ver-mais-link">Ver item</a></span>
+                                        <span class="label label-default"><a href="{{ path_for('problema', {'id': item.id}) }}" class="ver-mais-link">.. Ver mais</a></span>
                                     {% endif %}
                                 </p>
                             </div>

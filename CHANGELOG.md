@@ -1,3 +1,8 @@
+### 30.05.2017d ###
+- Alterada imagem da página não encontrada.
+- Adicionado tratamento para quando for ler um item e não existir no sistema.
+- Adicionado persistência de quebra de linha, quando inserido, no campo solução.
+
 ### 30.05.2017c ###
 - Alterado layout dos itens.
 
