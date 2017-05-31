@@ -1,17 +1,24 @@
 <?php
 
-$app->get('/', 'HomeController:index')->setName('home');
-$app->get('/Sobre', 'HomeController:getSobre')->setName('sobre');
-$app->get('/Novo', 'HomeController:getNovo')->setName('novo');
-$app->post('/Novo', 'HomeController:postNovo');
-$app->get('/Pesquisar', 'HomeController:getPesquisar')->setName('pesquisar');
-$app->get('/Problema/{id}', 'HomeController:getProblema')->setName('problema');
-$app->get('/Problemas/Tag/{id}', 'HomeController:getProblemasTag')->setName('tag');
-$app->get('/Problemas/Tabela/{id}', 'HomeController:getProblemasTabela')->setName('tabela');
-$app->get('/Problemas/Categoria/{id}', 'HomeController:getProblemasCategoria')->setName('categoria');
-$app->get('/Alterar/{id}', 'HomeController:getAlterar')->setName('alterar');
-$app->post('/Alterar/{id}', 'HomeController:postAlterar');
-$app->get('/Excluir/{id}', 'HomeController:getExcluir')->setName('excluir');
-$app->post('/Excluir/{id}', 'HomeController:postExcluir');
-$app->get('/livesearch/{termo}', 'HomeController:getLiveSearch');
-$app->get('/liveselect/{termo}', 'HomeController:getLiveSelect');
+// Views
+$app->get ('/',                         \Kugel\Controllers\ViewController::class . ':viewIndex'   )->setName('home');
+$app->get ('/Sobre',                    \Kugel\Controllers\ViewController::class . ':viewSobre'   )->setName('sobre');
+$app->get ('/Novo',                     \Kugel\Controllers\ViewController::class . ':viewNovo'    )->setName('novo');
+$app->get ('/Problema/{id}',            \Kugel\Controllers\ViewController::class . ':viewProblema')->setName('problema');
+$app->get ('/Alterar/{id}',             \Kugel\Controllers\ViewController::class . ':viewAlterar' )->setName('alterar');
+$app->get ('/Excluir/{id}',             \Kugel\Controllers\ViewController::class . ':viewExcluir' )->setName('excluir');
+
+// Métodos de inclusão/alteração/exclusão
+$app->post('/Novo',                     \Kugel\Controllers\ProblemaController::class . ':postNovo'   );
+$app->post('/Alterar/{id}',             \Kugel\Controllers\ProblemaController::class . ':postAlterar');
+$app->post('/Excluir/{id}',             \Kugel\Controllers\ProblemaController::class . ':postExcluir');
+
+// Pesquisas
+$app->get ('/Pesquisar',                \Kugel\Controllers\PesquisaController::class . ':getPesquisaGeral'    )->setName('pesquisar');
+$app->get ('/Problemas/Tag/{id}',       \Kugel\Controllers\PesquisaController::class . ':getPesquisaTag'      )->setName('tag');
+$app->get ('/Problemas/Tabela/{id}',    \Kugel\Controllers\PesquisaController::class . ':getPesquisaTabela'   )->setName('tabela');
+$app->get ('/Problemas/Categoria/{id}', \Kugel\Controllers\PesquisaController::class . ':getPesquisaCategoria')->setName('categoria');
+
+// Live searchs
+$app->get ('/livesearch/{termo}',       \Kugel\Controllers\LiveController::class . ':getLiveSearch');
+$app->get ('/liveselect/{termo}',       \Kugel\Controllers\LiveController::class . ':getLiveSelect');

@@ -64,6 +64,7 @@ class Problema extends Model {
     
     public function tabelas() {
         $list = $this->tabelasProblema()->get();
+        //dump($list);
         foreach ($list as $l) {
             $t = Tabela::find($l->tabela_id);
             $l->nome = $t->nome;

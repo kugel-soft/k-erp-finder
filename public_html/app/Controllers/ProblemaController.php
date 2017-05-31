@@ -2,30 +2,19 @@
 
 namespace Kugel\Controllers;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Kugel\Models\Categoria;
 use Kugel\Models\ProblemaTabela;
 use Kugel\Models\ProblemaTag;
 use Kugel\Models\Problema;
 use Kugel\Models\Tabela;
 use Kugel\Models\Tag;
-use Slim\Views\Twig as View;
+use Kugel\Utils\StringUtils;
 use Respect\Validation\Validator as v;
 
-class HomeController extends Controller {
-    public function index($request, $response) {
-        $problemas = Problema::orderBy('updated_at', 'desc')->paginate(5)->appends($request->getParams());
-        return $this->view->render($response, 'pesquisa.twig', compact('problemas'));
-    }
-    
-    public function getSobre($request, $response) {
-        return $this->view->render($response, 'sobre.twig', compact('problemas'));
-    }
-    
-    public function getNovo($request, $response) {
-        return $this->view->render($response, 'novo.twig', compact('problemas'));
-    }
-    
+class ProblemaController extends Controller {
+    /*
+    * Método que salva um novo item
+    */
     public function postNovo($request, $response) {
         $validation = $this->validator->validate($request, [
             'titulo' => v::notEmpty()->stringType()->length(1, 255),
@@ -58,9 +47,9 @@ class HomeController extends Controller {
             
             // problema
             $problema = Problema::create([
-                'titulo'       => $request->getParam('titulo'),
-                'situacao'     => $request->getParam('situacao'),
-                'solucao'      => $request->getParam('solucao'),
+                'titulo'       => trim($request->getParam('titulo')),
+                'situacao'     => trim($request->getParam('situacao')),
+                'solucao'      => trim($request->getParam('solucao')),
                 'criador'      => $request->getParam('criador'),
                 'categoria_id' => $categoriaId,
             ]);
@@ -83,19 +72,21 @@ class HomeController extends Controller {
             }
             
             // tabelas
-            $tabelas = explode(",", $request->getParam('tabelas'));
-            foreach ($tabelas as $t) {
-                $tabela = Tabela::where('nome', 'like', '%'.trim($t).'%')->first();
-                if (!$tabela) {
-                    $tabela = Tabela::create([
-                        'nome' => trim($t),
-                    ]);
-                    
-                    // relacionamento
-                    $pt = ProblemaTabela::create([
-                        'problema_id' => $problema->id,
-                        'tabela_id' => $tabela->id,
-                    ]);
+            if (!StringUtils::isEmpty($request->getParam('tabelas'))) {
+                $tabelas = explode(",", $request->getParam('tabelas'));
+                foreach ($tabelas as $t) {
+                    $tabela = Tabela::where('nome', 'like', '%'.trim($t).'%')->first();
+                    if (!$tabela) {
+                        $tabela = Tabela::create([
+                            'nome' => trim($t),
+                        ]);
+                        
+                        // relacionamento
+                        $pt = ProblemaTabela::create([
+                            'problema_id' => $problema->id,
+                            'tabela_id' => $tabela->id,
+                        ]);
+                    }
                 }
             }
             
@@ -109,63 +100,9 @@ class HomeController extends Controller {
         }
     }
     
-    public function getPesquisar($request, $response) {
-        $termo = $request->getParam('termo');
-        
-        $problemas = Problema::where('titulo', 'like', '%'.$termo.'%')
-            ->orWhere('situacao', 'like', '%'.$termo.'%')
-            ->orWhere('solucao', 'like', '%'.$termo.'%')
-            ->orderBy('titulo')
-            ->paginate(5)
-            ->appends($request->getParams());
-        
-        return $this->view->render($response, 'pesquisa.twig', compact('problemas', 'termo'));
-    }
-    
-    public function getProblema($request, $response) {
-        $problema = Problema::find($request->getAttribute('id'));
-        if (!$problema) {
-            $this->flash->addMessage('error', 'Item não encontrado! Tente a pesquisa!');
-            return $response->withRedirect($this->router->pathFor('home'));
-        }
-        return $this->view->render($response, 'problema.twig', compact('problema'));
-    }
-    
-    public function getProblemasTag($request, $response) {
-        $ids = ProblemaTag::where('tag_id', $request->getAttribute('id'))->get(['problema_id']);
-        $list = [];
-        foreach ($ids as $id) {
-            array_push($list, $id->problema_id);
-        }
-        $problemas = Problema::find($list);
-        return $this->view->render($response, 'pesquisa.twig', compact('problemas'));
-    }
-    
-    public function getProblemasTabela($request, $response) {
-        $ids = ProblemaTabela::where('tabela_id', $request->getAttribute('id'))->get(['problema_id']);
-        $list = [];
-        foreach ($ids as $id) {
-            array_push($list, $id->problema_id);
-        }
-        $problemas = Problema::find($list);
-        return $this->view->render($response, 'pesquisa.twig', compact('problemas'));
-    }
-    
-    public function getProblemasCategoria($request, $response) {
-        $problemas = Problema::where('categoria_id', $request->getAttribute('id'))->get();
-        return $this->view->render($response, 'pesquisa.twig', compact('problemas'));
-    }
-    
-    public function getAlterar($request, $response) {
-        $id = $request->getAttribute('id');
-        $p = Problema::find($id);
-        if (!$p) {
-            $this->flash->addMessage('error', 'Item não encontrado para alteração!');
-            return $response->withRedirect($this->router->pathFor('home'));
-        }
-        return $this->view->render($response, 'alterar.twig', compact('p'));
-    }
-    
+    /*
+    * Método que salva a alteração de um item
+    */
     public function postAlterar($request, $response) {
         $validation = $this->validator->validate($request, [
             'titulo' => v::notEmpty()->stringType()->length(10, 255),
@@ -188,9 +125,9 @@ class HomeController extends Controller {
                 return $response->withRedirect($this->router->pathFor('alterar', ['id' => $request->getAttribute('id')]));
             }
             
-            $problema->titulo = $request->getParam('titulo');
-            $problema->situacao = $request->getParam('situacao');
-            $problema->solucao = preg_replace("/\r\n|\r|\n/", '<br>', $request->getParam('solucao'));
+            $problema->titulo = trim($request->getParam('titulo'));
+            $problema->situacao = trim($request->getParam('situacao'));
+            $problema->solucao = trim(preg_replace("/\r\n|\r|\n/", '<br>', $request->getParam('solucao')));
             $problema->save();
             
             // tags
@@ -226,20 +163,22 @@ class HomeController extends Controller {
             
             // tabelas
             ProblemaTabela::where('problema_id', $problema->id)->delete();
-            $tabelas = explode(",", $request->getParam('tabelas'));
-            foreach ($tabelas as $t) {
-                $tabela = Tabela::where('nome', trim($t))->first();
-                if (!$tabela) {
-                    $tabela = Tabela::create([
-                        'nome' => trim($t),
+            if (!StringUtils::isEmpty($request->getParam('tabelas'))) {
+                $tabelas = explode(",", $request->getParam('tabelas'));
+                foreach ($tabelas as $t) {
+                    $tabela = Tabela::where('nome', trim($t))->first();
+                    if (!$tabela) {
+                        $tabela = Tabela::create([
+                            'nome' => trim($t),
+                        ]);
+                    }
+                    
+                    // relacionamento
+                    $pt = ProblemaTabela::create([
+                        'problema_id' => $problema->id,
+                        'tabela_id' => $tabela->id,
                     ]);
                 }
-                
-                // relacionamento
-                $pt = ProblemaTabela::create([
-                    'problema_id' => $problema->id,
-                    'tabela_id' => $tabela->id,
-                ]);
             }
             
             // Limpar tabelas
@@ -266,16 +205,9 @@ class HomeController extends Controller {
         }
     }
     
-    public function getExcluir($request, $response) {
-        $id = $request->getAttribute('id');
-        $p = Problema::find($id);
-        if (!$p) {
-            $this->flash->addMessage('error', 'Item não encontrado para exclusão!');
-            return $response->withRedirect($this->router->pathFor('home'));
-        }
-        return $this->view->render($response, 'excluir.twig', compact('p'));
-    }
-    
+    /*
+    * Método que exclui um item
+    */
     public function postExcluir($request, $response) {
         $id = $request->getAttribute('id');
         $problema = Problema::find($id);
@@ -341,49 +273,5 @@ class HomeController extends Controller {
             $this->db->getConnection()->getPdo()->rollback();
             $this->flash->addMessage('error', 'Erro ao cadastrar imóvel: ' . $e->getMessage());
         }
-    }
-    
-    public function getLiveSearch($request, $response) {
-        $termo = $request->getAttribute('termo');
-        
-        $problemas = Problema::where('titulo', 'like', '%'.$termo.'%')
-            ->orWhere('situacao', 'like', '%'.$termo.'%')
-            ->orWhere('solucao', 'like', '%'.$termo.'%')
-            ->orderBy('titulo')
-            ->get();
-            
-        if (count($problemas) == 0) {
-            return '<ul class="list-group"><li class="list-group-item">Nenhum resultado!</li></ul>';
-        }
-        else {
-            $data = '<ul class="list-group">';
-            foreach ($problemas as $p) {
-                $data .= '<li class="list-group-item"><a href="/Problema/' . $p->id . '">' . $p->titulo . '</a></li>';
-            }
-            $data .= '</ul>';
-            return $data;
-        }
-        
-    }
-    
-    public function getLiveSelect($request, $response) {
-        $termo = $request->getAttribute('termo');
-        
-        $categorias = Categoria::where('nome', 'like', '%'.$termo.'%')
-            ->orderBy('nome')
-            ->get();
-            
-        if (count($categorias) == 0) {
-            return '<ul class="list-group"><li class="list-group-item"><a href="javascript:selectItem(\'' . ucfirst($termo) . '\')">Novo item: ' . ucfirst($termo) . '</a></li></ul>';
-        }
-        else {
-            $data = '<ul class="list-group">';
-            foreach ($categorias as $c) {
-                $data .= '<li class="list-group-item"><a href="javascript:selectItem(\'' . $c->nome . '\')">' . $c->nome . '</a></li>';
-            }
-            $data .= '</ul>';
-            return $data;
-        }
-        
     }
 }

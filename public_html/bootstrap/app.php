@@ -1,28 +1,20 @@
 <?php
 
-use Kugel\View\Factory;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-use Respect\Validation\Validator as v;
-
 session_start();
 
+/*
+* Carrega as classes das bibliotecas
+*/
 require __DIR__ . '/../vendor/autoload.php';
 
-LengthAwarePaginator::viewFactoryResolver(function() {
-    return new Factory;
-});
+/*
+* Carrega o paginador
+*/
+require __DIR__ . '/../bootstrap/paginator.php';
 
-LengthAwarePaginator::defaultView('pagination/bootstrap.twig');
-
-Paginator::currentPathResolver(function() {
-    return isset($_SERVER['REQUEST_URI']) ? strtok($_SERVER['REQUEST_URI'], '?') : '/';
-});
-
-Paginator::currentPageResolver(function() {
-    return $_GET['page'] ?? 1;
-});
-
+/*
+* Instancia um novo Slim app
+*/
 $app = new \Slim\App([
     'settings' => [
         'displayErrorDetails' => true,
@@ -39,43 +31,65 @@ $app = new \Slim\App([
     ],
 ]);
 
+/*
+* Adquire o container para injeção de classes
+*/
 $container = $app->getContainer();
 
+/*
+* Injeção do eloquent (acesso ao BD)
+*/
 $capsule = new \Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($container['settings']['db']);
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
-
 $container['db'] = function($container) use ($capsule) {
     return $capsule;
 };
 
+/*
+* Injeção do flash (para enviar mensagem às págians)
+*/
 $container['flash'] = function($container) {
     return new \Slim\Flash\Messages;
 };
 
+/*
+* Injeção das tags globalmente para acesso em todas as páginas
+*/
 $container['tags'] = function($container) {
     return \Kugel\Models\Tag::orderBy('nome')->get();
 };
 
+/*
+* Injeção das tabelas globalmente para acesso em todas as páginas
+*/
 $container['tabelas'] = function($container) {
     return \Kugel\Models\Tabela::orderBy('nome')->get();
 };
 
+/*
+* Injeção das categorias globalmente para acesso em todas as páginas
+*/
 $container['categorias'] = function($container) {
     return \Kugel\Models\Categoria::orderBy('nome')->get();
 };
 
+/*
+* Injeção do renderizador de páginas do projeto, neste caso, o Twig
+*/
 $container['view'] = function($container) {
-    $view = Factory::getEngine();
+    $view = \Kugel\View\Factory::getEngine();
     
     $view->addExtension(new \Slim\Views\TwigExtension(
         $container->router,
         $container->request->getUri()
     ));
     
+    /*
+    * Adiciona em todas as views o acesso aos itens criados anteriormente
+    */
     $view->getEnvironment()->addGlobal('flash', $container->flash);
-    
     $view->getEnvironment()->addGlobal('tags', $container->tags);
     $view->getEnvironment()->addGlobal('tabelas', $container->tabelas);
     $view->getEnvironment()->addGlobal('categorias', $container->categorias);
@@ -83,6 +97,9 @@ $container['view'] = function($container) {
     return $view;
 };
 
+/*
+* Sobrescrita do tratamento de página não encontrada, para usar uma personalizada
+*/
 $container['notFoundHandler'] = function($container) {
     return function($request, $response) use ($container) {
         $container->view->render($response, 'errors/404.twig');
@@ -90,17 +107,26 @@ $container['notFoundHandler'] = function($container) {
     };
 };
 
+/*
+* Injeção da biblioteca de validação
+*/
 $container['validator'] = function($container) {
     return new \Kugel\Validation\Validator;
 };
 
-$container['HomeController'] = function($container) {
-    return new \Kugel\Controllers\HomeController($container);
-};
-
+/*
+* Adição das classes Middleware para tratamento/interferência nas requisições
+*/
 $app->add(new \Kugel\Middleware\ValidationErrorsMiddleware($container));
 $app->add(new \Kugel\Middleware\OldInputMiddleware($container));
 
-v::with('Kugel\\Validation\\Rules\\');
+/*
+* Usar o trecho a baixo para criar validações personalizadas na biblioteca
+*/
+//use Respect\Validation\Validator as v;
+//v::with('Kugel\\Validation\\Rules\\');
 
+/*
+* Rotas do sistema
+*/
 require __DIR__ . '/../app/routes.php';
