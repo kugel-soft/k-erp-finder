@@ -24,14 +24,14 @@
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                     </div>
                     <div class="panel-body">
                         <h4>Situação</h4>
                         <div class="source-code-situacao">
-                            <p>{{ problema.situacao }}</p>
+                            <p>{{ problema.situacao|raw }}</p>
                         </div>
-                        
+
                         <h4>Possível solução</h4>
                         <div class="source-code-solucao">
                             <p>{{ problema.solucao|raw }}</p>

@@ -23,15 +23,15 @@ class ProblemaController extends Controller {
             'solucao' => v::notEmpty()->stringType()->length(10, 5000),
             'criador' => v::notEmpty()->stringType()->length(1, 30),
         ]);
-        
+
         if ($validation->failed()) {
             $this->flash->addMessage('error', 'Dados inválidos!');
             return $response->withRedirect($this->router->pathFor('novo'));
         }
-        
+
         try {
             $this->db->getConnection()->getPdo()->beginTransaction();
-        
+
             // categoria
             $categoriaId = NULL;
             $categoria = Categoria::where('nome', $request->getParam('categoria'))->first();
@@ -44,7 +44,7 @@ class ProblemaController extends Controller {
                 ]);
                 $categoriaId = $novaCategoria->id;
             }
-            
+
             // problema
             $problema = Problema::create([
                 'titulo'       => trim($request->getParam('titulo')),
@@ -53,7 +53,7 @@ class ProblemaController extends Controller {
                 'criador'      => $request->getParam('criador'),
                 'categoria_id' => $categoriaId,
             ]);
-            
+
             // tags
             $tags = explode(",", $request->getParam('tags'));
             foreach ($tags as $t) {
@@ -62,7 +62,7 @@ class ProblemaController extends Controller {
                     $tag = Tag::create([
                         'nome' => trim($t),
                     ]);
-                    
+
                     // relacionamento
                     $pt = ProblemaTag::create([
                         'problema_id' => $problema->id,
@@ -70,7 +70,7 @@ class ProblemaController extends Controller {
                     ]);
                 }
             }
-            
+
             // tabelas
             if (!StringUtils::isEmpty($request->getParam('tabelas'))) {
                 $tabelas = explode(",", $request->getParam('tabelas'));
@@ -80,7 +80,7 @@ class ProblemaController extends Controller {
                         $tabela = Tabela::create([
                             'nome' => trim($t),
                         ]);
-                        
+
                         // relacionamento
                         $pt = ProblemaTabela::create([
                             'problema_id' => $problema->id,
@@ -89,7 +89,7 @@ class ProblemaController extends Controller {
                     }
                 }
             }
-            
+
             $this->db->getConnection()->getPdo()->commit();
             $this->flash->addMessage('success', 'Item adicionado com sucesso!');
             return $response->withRedirect($this->router->pathFor('home'));
@@ -99,7 +99,7 @@ class ProblemaController extends Controller {
             $this->flash->addMessage('error', 'Erro ao cadastrar imóvel: ' . $e->getMessage());
         }
     }
-    
+
     /*
     * Método que salva a alteração de um item
     */
@@ -109,27 +109,27 @@ class ProblemaController extends Controller {
             'situacao' => v::notEmpty()->stringType()->length(10, 1000),
             'solucao' => v::notEmpty()->stringType()->length(10, 5000),
         ]);
-        
+
         if ($validation->failed()) {
             $this->flash->addMessage('error', 'Dados inválidos!');
             return $response->withRedirect($this->router->pathFor('alterar', ['id' => $request->getAttribute('id')]));
         }
-        
+
         try {
             $this->db->getConnection()->getPdo()->beginTransaction();
-        
+
             // problema
             $problema = Problema::find($request->getAttribute('id'));
             if (!$problema) {
                 $this->flash->addMessage('error', 'Item não encontrado para alteração!');
                 return $response->withRedirect($this->router->pathFor('alterar', ['id' => $request->getAttribute('id')]));
             }
-            
+
             $problema->titulo = trim($request->getParam('titulo'));
-            $problema->situacao = trim($request->getParam('situacao'));
+            $problema->situacao = trim(preg_replace("/\r\n|\r|\n/", '<br>', $request->getParam('situacao')));
             $problema->solucao = trim(preg_replace("/\r\n|\r|\n/", '<br>', $request->getParam('solucao')));
             $problema->save();
-            
+
             // tags
             ProblemaTag::where('problema_id', $problema->id)->delete();
             $tags = explode(",", $request->getParam('tags'));
@@ -140,7 +140,7 @@ class ProblemaController extends Controller {
                         'nome' => trim($t),
                     ]);
                 }
-                
+
                 // relacionamento
                 $pt = ProblemaTag::create([
                     'problema_id' => $problema->id,
@@ -160,7 +160,7 @@ class ProblemaController extends Controller {
                     $tc->delete();
                 }
             }
-            
+
             // tabelas
             ProblemaTabela::where('problema_id', $problema->id)->delete();
             if (!StringUtils::isEmpty($request->getParam('tabelas'))) {
@@ -172,7 +172,7 @@ class ProblemaController extends Controller {
                             'nome' => trim($t),
                         ]);
                     }
-                    
+
                     // relacionamento
                     $pt = ProblemaTabela::create([
                         'problema_id' => $problema->id,
@@ -180,7 +180,7 @@ class ProblemaController extends Controller {
                     ]);
                 }
             }
-            
+
             // Limpar tabelas
             //delete from tabelas where id not in (select tabela_id from problemas_tabelas join problemas on (problemas.id = problemas_tabelas.problema_id));
             $tabelasId = ProblemaTabela::join('problemas', 'problemas.id', '=', 'problemas_tabelas.problema_id')->select(['tabela_id'])->get();
@@ -194,7 +194,7 @@ class ProblemaController extends Controller {
                     $tc->delete();
                 }
             }
-            
+
             $this->db->getConnection()->getPdo()->commit();
             $this->flash->addMessage('success', 'Item alterado com sucesso!');
             return $response->withRedirect($this->router->pathFor('problema', ['id' => $request->getAttribute('id')]));
@@ -204,7 +204,7 @@ class ProblemaController extends Controller {
             $this->flash->addMessage('error', 'Erro ao cadastrar imóvel: ' . $e->getMessage());
         }
     }
-    
+
     /*
     * Método que exclui um item
     */
@@ -215,13 +215,13 @@ class ProblemaController extends Controller {
             $this->flash->addMessage('error', 'Item não encontrado para exclusão!');
             return $response->withRedirect($this->router->pathFor('home'));
         }
-        
+
         try {
             $this->db->getConnection()->getPdo()->beginTransaction();
-        
+
             // tags
             ProblemaTag::where('problema_id', $problema->id)->delete();
-            
+
             // Limpar tags
             //delete from tags where id not in (select tag_id from problemas_tags join problemas on (problemas.id = problemas_tags.problema_id));
             $tagsId = ProblemaTag::join('problemas', 'problemas.id', '=', 'problemas_tags.problema_id')->select(['tag_id'])->get();
@@ -235,10 +235,10 @@ class ProblemaController extends Controller {
                     $tc->delete();
                 }
             }
-            
+
             // tabelas
             ProblemaTabela::where('problema_id', $problema->id)->delete();
-            
+
             // Limpar tabelas
             //delete from tabelas where id not in (select tabela_id from problemas_tabelas join problemas on (problemas.id = problemas_tabelas.problema_id));
             $tabelasId = ProblemaTabela::join('problemas', 'problemas.id', '=', 'problemas_tabelas.problema_id')->select(['tabela_id'])->get();
@@ -252,9 +252,9 @@ class ProblemaController extends Controller {
                     $tc->delete();
                 }
             }
-            
+
             $problema->delete();
-            
+
             // Limpar categorias
             // select * from categorias where id not in (select distinct categoria_id from problemas);
             $categoriasList = Categoria::get();
@@ -264,7 +264,7 @@ class ProblemaController extends Controller {
                     $categoriaBd->delete();
                 }
             }
-            
+
             $this->db->getConnection()->getPdo()->commit();
             $this->flash->addMessage('success', 'Item excluído com sucesso!');
             return $response->withRedirect($this->router->pathFor('home'));

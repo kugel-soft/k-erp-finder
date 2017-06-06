@@ -1,3 +1,7 @@
+### 06.06.2017a ###
+- Corrigido bug: Erro ao pesquisar clicando na categoria.
+- Adicionado persistência de quebra de linha, quando inserido, no campo situação.
+
 ### 30.05.2017d ###
 - Alterada imagem da página não encontrada.
 - Adicionado tratamento para quando for ler um item e não existir no sistema.

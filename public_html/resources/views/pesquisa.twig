@@ -27,19 +27,19 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="panel-body">
                             <h4>Situação</h4>
                             <div class="source-code-situacao">
-                                <p>{{ item.situacao }}</p>
+                                <p>{{ item.situacao|length > 80 ? item.situacao|slice(0, 60) ~ '...' : item.situacao|raw }}</p>
                             </div>
-                            
+
                             <h4>Possível solução</h4>
                             <div class="source-code-solucao">
                                 <p>
-                                    {{ item.solucao|length > 80 ? item.solucao|slice(0, 60)|raw : item.solucao|raw }}
+                                    {{ item.solucao|length > 80 ? item.solucao|slice(0, 60) ~ '...' : item.solucao|raw }}
                                     {% if item.solucao|length > 80 %}
-                                        <span class="label label-default"><a href="{{ path_for('problema', {'id': item.id}) }}" class="ver-mais-link">.. Ver mais</a></span>
+                                        <span class="label label-default"><a href="{{ path_for('problema', {'id': item.id}) }}" class="ver-mais-link">VER MAIS</a></span>
                                     {% endif %}
                                 </p>
                             </div>
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                 {% endfor %}
-                
+
                 {{ problemas.links | raw }}
             {% else %}
                 <p>Nenhum item encontrado!</p>
