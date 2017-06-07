@@ -48,8 +48,8 @@ class ProblemaController extends Controller {
             // problema
             $problema = Problema::create([
                 'titulo'       => trim($request->getParam('titulo')),
-                'situacao'     => trim($request->getParam('situacao')),
-                'solucao'      => trim($request->getParam('solucao')),
+                'situacao'     => trim(preg_replace("/\r\n|\r|\n/", '<br>', $request->getParam('situacao'))),
+                'solucao'      => trim(preg_replace("/\r\n|\r|\n/", '<br>', $request->getParam('solucao'))),
                 'criador'      => $request->getParam('criador'),
                 'categoria_id' => $categoriaId,
             ]);

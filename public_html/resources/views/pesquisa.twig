@@ -31,14 +31,14 @@
                         <div class="panel-body">
                             <h4>Situação</h4>
                             <div class="source-code-situacao">
-                                <p>{{ item.situacao|length > 80 ? item.situacao|slice(0, 60) ~ '...' : item.situacao|raw }}</p>
+                                <p>{{ item.getSituacaoTexto() }}</p>
                             </div>
 
                             <h4>Possível solução</h4>
                             <div class="source-code-solucao">
                                 <p>
-                                    {{ item.solucao|length > 80 ? item.solucao|slice(0, 60) ~ '...' : item.solucao|raw }}
-                                    {% if item.solucao|length > 80 %}
+                                    {{ item.getSolucaoTexto() }}
+                                    {% if item.mostrarBotaoVerMais() %}
                                         <span class="label label-default"><a href="{{ path_for('problema', {'id': item.id}) }}" class="ver-mais-link">VER MAIS</a></span>
                                     {% endif %}
                                 </p>

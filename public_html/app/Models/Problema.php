@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Problema extends Model {
     protected $table = 'problemas';
-    
+
     protected $fillable = [
         'titulo',
         'situacao',
@@ -15,17 +15,17 @@ class Problema extends Model {
         'criador',
         'categoria_id',
     ];
-    
+
     public function getCreatedAtAttribute($input) {
         $dt = new DateTime($input);
         return $dt->format('d/m/Y à\s H:i:s');
     }
-    
+
     public function getUpdatedAtAttribute($input) {
         $dt = new DateTime($input);
         return $dt->format('d/m/Y à\s H:i:s');
     }
-    
+
     public function getCriadorAttribute($input) {
         if ($input == 'ademar') return 'Ademar';
         if ($input == 'andre') return 'André';
@@ -40,19 +40,19 @@ class Problema extends Model {
         if ($input == 'valdecir') return 'Valdecir';
         return 'Usuário não cadastrado';
     }
-    
+
     public function tagsProblema() {
         return $this->hasMany('Kugel\Models\ProblemaTag', 'problema_id', 'id');
     }
-    
+
     public function tabelasProblema() {
         return $this->hasMany('Kugel\Models\ProblemaTabela', 'problema_id', 'id');
     }
-    
+
     public function categoria() {
         return $this->hasOne('Kugel\Models\Categoria', 'id', 'categoria_id');
     }
-    
+
     public function tags() {
         $list = $this->tagsProblema()->get();
         foreach ($list as $l) {
@@ -61,7 +61,7 @@ class Problema extends Model {
         }
         return $list;
     }
-    
+
     public function tabelas() {
         $list = $this->tabelasProblema()->get();
         //dump($list);
@@ -71,7 +71,7 @@ class Problema extends Model {
         }
         return $list;
     }
-    
+
     public function getTagsInput() {
         $r = '';
         $t = $this->tags();
@@ -85,7 +85,7 @@ class Problema extends Model {
         }
         return $r;
     }
-    
+
     public function getTabelasInput() {
         $r = '';
         $t = $this->tabelas();
@@ -98,5 +98,27 @@ class Problema extends Model {
             $c++;
         }
         return $r;
+    }
+
+    public function getSituacaoTexto() {
+        $s = $this->situacao;
+        $s = str_replace('<br>', '', $s);
+        if (strlen($s) > 80) {
+            return substr($s, 0, 80) . '...';
+        }
+        return $s;
+    }
+
+    public function getSolucaoTexto() {
+        $s = $this->solucao;
+        $s = str_replace('<br>', '', $s);
+        if (strlen($s) > 80) {
+            return substr($s, 0, 80) . '...';
+        }
+        return $s;
+    }
+    
+    public function mostrarBotaoVerMais() {
+        return strlen($this->solucao) > 80;
     }
 }

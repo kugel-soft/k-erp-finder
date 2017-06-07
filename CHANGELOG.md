@@ -1,3 +1,7 @@
+### 07.06.2017a ###
+- Alterado para obter o texto recortado direto da classe do objeto.
+- Alterado para incluir os textos de situação e solução já com quebras de linha.
+
 ### 06.06.2017a ###
 - Corrigido bug: Erro ao pesquisar clicando na categoria.
 - Adicionado persistência de quebra de linha, quando inserido, no campo situação.
