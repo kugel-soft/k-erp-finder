@@ -1,3 +1,7 @@
+### 27.07.2017a ###
+- Adicionado rotina para verificação de novos itens na página da sefaz.
+- Corrigido envio de e-mail que não era disparado ao achar um novo item na sefaz.
+
 ### 07.06.2017a ###
 - Alterado para obter o texto recortado direto da classe do objeto.
 - Alterado para incluir os textos de situação e solução já com quebras de linha.

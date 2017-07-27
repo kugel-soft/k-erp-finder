@@ -62,3 +62,49 @@ create table problemas_tabelas (
     foreign key(tabela_id) references tabelas(id),
     primary key(id)
 );
+
+-- tabelas para dados da nfe
+create table contingencias_ativadas (
+    id int auto_increment,
+    texto varchar(500) not null,
+    visto char(1) not null,
+    created_at timestamp,
+    updated_at timestamp,
+    primary key(id)
+);
+
+create table contingencias_agendadas (
+    id int auto_increment,
+    texto varchar(500) not null,
+    visto char(1) not null,
+    created_at timestamp,
+    updated_at timestamp,
+    primary key(id)
+);
+
+create table informes (
+    id int auto_increment,
+    texto varchar(500) not null,
+    visto char(1) not null,
+    created_at timestamp,
+    updated_at timestamp,
+    primary key(id)
+);
+
+create table documentos_diversos (
+    id int auto_increment,
+    texto varchar(500) not null,
+    visto char(1) not null,
+    created_at timestamp,
+    updated_at timestamp,
+    primary key(id)
+);
+
+create table documentos_tecnicos (
+    id int auto_increment,
+    texto varchar(500) not null,
+    visto char(1) not null,
+    created_at timestamp,
+    updated_at timestamp,
+    primary key(id)
+);

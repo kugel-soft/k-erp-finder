@@ -1,0 +1,59 @@
+{% extends 'templates/wind.twig' %}
+
+{% block content %}
+    <h3>Dados da consulta</h3>
+    <p><b>Serviço(s) em contingência ativada</b></p>
+    <ul class="list-group">
+        {% if data.contAtivList is empty %}
+            <li class="list-group-item">Nenhum serviço <b>não visto</b> em contingência ativada!</li>
+        {% else %}
+            {% for item in data.contAtivList %}
+                <a href="{{ path_for('conf-cont-ativ', {'id': item.id}) }}" title="Marcar como visto!" class="list-group-item">{{ item.texto }}</a>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    <p><b>Serviço(s) em contingência agendada</b></p>
+    <ul class="list-group">
+        {% if data.contAgendList is empty %}
+            <li class="list-group-item">Nenhum serviço <b>não visto</b> em contingência agendada!</li>
+        {% else %}
+            {% for item in data.contAgendList %}
+                <a href="{{ path_for('conf-cont-agend', {'id': item.id}) }}" title="Marcar como visto!" class="list-group-item">{{ item.texto }}</a>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    <p><b>Informes</b></p>
+    <ul class="list-group">
+        {% if data.informeList is empty %}
+            <li class="list-group-item">Nenhum informes <b>não visto</b>!</li>
+        {% else %}
+            {% for item in data.informeList %}
+                <a href="{{ path_for('conf-informe', {'id': item.id}) }}" title="Marcar como visto!" class="list-group-item">{{ item.texto }}</a>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    <p><b>Documentos :: Diversos</b></p>
+    <ul class="list-group">
+        {% if data.docDiversosList is empty %}
+            <li class="list-group-item">Nenhum documento diverso <b>não visto</b>!</li>
+        {% else %}
+            {% for item in data.docDiversosList %}
+                <a href="{{ path_for('conf-doc-div', {'id': item.id}) }}" title="Marcar como visto!" class="list-group-item">{{ item.texto }}</a>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    <p><b>Documentos :: Notas Técnicas</b></p>
+    <ul class="list-group">
+        {% if data.docNotaTecList is empty %}
+            <li class="list-group-item">Nenhuma nota técnica <b>não vista</b>!</li>
+        {% else %}
+            {% for item in data.docNotaTecList %}
+                <a href="{{ path_for('conf-doc-tec', {'id': item.id}) }}" title="Marcar como visto!" class="list-group-item">{{ item.texto }}</a>
+            {% endfor %}
+        {% endif %}
+    </ul>
+{% endblock %}

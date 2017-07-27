@@ -94,9 +94,9 @@ class ProblemaController extends Controller {
             $this->flash->addMessage('success', 'Item adicionado com sucesso!');
             return $response->withRedirect($this->router->pathFor('home'));
         }
-        catch (Excepion $e) {
+        catch (\Excepion $e) {
             $this->db->getConnection()->getPdo()->rollback();
-            $this->flash->addMessage('error', 'Erro ao cadastrar imóvel: ' . $e->getMessage());
+            $this->flash->addMessage('error', 'Erro ao cadastrar item: ' . $e->getMessage());
         }
     }
 

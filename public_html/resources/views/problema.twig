@@ -14,7 +14,7 @@
                                         <span class="label label-success">{{ tag.nome }}</span>
                                     {% endfor %}
                                 </span>
-                                {% if item.tabelas() is not empty %}
+                                {% if problema.tabelas() is not empty %}
                                     <span>
                                         <i class="fa fa-database"></i>
                                         {% for tabela in problema.tabelas() %}

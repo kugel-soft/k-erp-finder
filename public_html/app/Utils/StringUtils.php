@@ -7,7 +7,7 @@ class StringUtils {
         $len = strlen($needle);
         return (substr($haystack, 0, $length) === $needle);
     }
-    
+
     public static function endsWith($haystack, $needle) {
         $length = strlen($needle);
         if ($length == 0) {
@@ -16,11 +16,11 @@ class StringUtils {
 
         return (substr($haystack, -$length) === $needle);
     }
-    
+
     public static function isEmpty($input) {
         return empty(trim($input));
     }
-    
+
     public static function contains($haystack, $needle) {
         $position = strpos($haystack, $needle);
         return $position !== FALSE;

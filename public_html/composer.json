@@ -6,7 +6,9 @@
         "respect/validation": "^1.1",
         "slim/flash": "^0.1.0",
         "symfony/var-dumper": "^3.2",
-        "illuminate/pagination": "^5.4"
+        "illuminate/pagination": "^5.4",
+        "paquettg/php-html-parser": "^1.7",
+        "guzzlehttp/guzzle": "^6.3"
     },
     "autoload": {
         "psr-4": {
