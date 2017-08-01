@@ -18,7 +18,10 @@ $app->get('/Problema/{id}',
         ->setName('problema');
 
 $app->get('/ConsultaNFe',
-    \Kugel\Controllers\ViewController::class . ':viewConsultaNFe')
+    \Kugel\Controllers\ViewController::class . ':viewConsultaNFe');
+
+$app->get('/ConsultaNFeSE[/{mostrar}]',
+    \Kugel\Controllers\ViewController::class . ':viewConsultaNFeSE')
         ->setName('consulta-nfe');
 
 $app->get('/ConfirmarItem/ContAtiv/{id}',

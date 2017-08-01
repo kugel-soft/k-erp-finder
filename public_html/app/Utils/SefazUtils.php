@@ -149,6 +149,7 @@ class SefazUtils {
         *    </div>
         *</div>
         */
+        $baseURL = 'https://www.nfe.fazenda.gov.br/portal/';
         $divInformes = $domCrawler->find('#divInformes')[0];
         if ($divInformes) {
             $table = $divInformes->find('table')[0];
@@ -157,9 +158,15 @@ class SefazUtils {
                 if (count($trList) > 0) {
                     foreach ($trList as $row) {
                         $dataInforme = $row->find('a')[0]->text;
+                        $urlInforme = $row->find('a')[0]->getAttribute('href');
                         $tituloInforme = utf8_encode($row->find('a')[1]->text);
 
-                        array_push($data['informeList'], 'Em ' . $dataInforme . ',  ' . $tituloInforme);
+                        $item = array(
+                            'texto' => 'Em ' . $dataInforme . ',  ' . $tituloInforme,
+                            'endereco' => $baseURL . $urlInforme
+                        );
+
+                        array_push($data['informeList'], $item);
                     }
                 }
             }

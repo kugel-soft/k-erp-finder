@@ -86,6 +86,7 @@ create table informes (
     id int auto_increment,
     texto varchar(500) not null,
     visto char(1) not null,
+    endereco varchar(500),
     created_at timestamp,
     updated_at timestamp,
     primary key(id)

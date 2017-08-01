@@ -10,5 +10,6 @@ class Informe extends Model {
     protected $fillable = [
         'texto',
         'visto',
+        'endereco',
     ];
 }

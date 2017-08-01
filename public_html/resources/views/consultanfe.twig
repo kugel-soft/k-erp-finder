@@ -1,14 +1,28 @@
 {% extends 'templates/wind.twig' %}
 
 {% block content %}
-    <h3>Dados da consulta</h3>
+    <a href="{{ path_for('consulta-nfe', {'mostrar': 'vistos'}) }}">Mostrar Vistos</a> |
+    <a href="{{ path_for('consulta-nfe', {'mostrar': 'naovistos'}) }}">Mostrar Não Vistos</a>
+
+    <h3>Dados da consulta - Mostrando itens </h3>
     <p><b>Serviço(s) em contingência ativada</b></p>
     <ul class="list-group">
         {% if data.contAtivList is empty %}
             <li class="list-group-item">Nenhum serviço <b>não visto</b> em contingência ativada!</li>
         {% else %}
             {% for item in data.contAtivList %}
-                <a href="{{ path_for('conf-cont-ativ', {'id': item.id}) }}" title="Marcar como visto!" class="list-group-item">{{ item.texto }}</a>
+                <li class="list-group-item">
+                    {{ item.texto }}</a>
+                    <span class="pull-right">
+                        {% if item.visto == 'N' %}
+                            <a href="{{ path_for('conf-cont-ativ', {'id': item.id}) }}" title="Marcar como visto!">
+                                <i class="fa fa-check-square"></i>
+                            </a>
+                        {% else %}
+                            <i class="fa fa-check-square"></i>
+                        {% endif %}
+                    </span>
+                </li>
             {% endfor %}
         {% endif %}
     </ul>
@@ -30,7 +44,18 @@
             <li class="list-group-item">Nenhum informes <b>não visto</b>!</li>
         {% else %}
             {% for item in data.informeList %}
-                <a href="{{ path_for('conf-informe', {'id': item.id}) }}" title="Marcar como visto!" class="list-group-item">{{ item.texto }}</a>
+                <li class="list-group-item">
+                    <a target="_blank" href="{{ item.endereco }}">{{ item.texto }}</a>
+                    <span class="pull-right">
+                        {% if item.visto == 'N' %}
+                            <a href="{{ path_for('conf-informe', {'id': item.id}) }}" title="Marcar como visto!">
+                                <i class="fa fa-check-square"></i>
+                            </a>
+                        {% else %}
+                            <i class="fa fa-check-square"></i>
+                        {% endif %}
+                    </span>
+                </li>
             {% endfor %}
         {% endif %}
     </ul>

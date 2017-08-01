@@ -129,8 +129,9 @@ class ViewController extends Controller {
             $result = Informe::where('texto', $item)->first();
             if (!$result) {
                 $c = Informe::create([
-                    'texto' => $item,
+                    'texto' => $item['texto'],
                     'visto' => 'N',
+                    'endereco' => $item['endereco'],
                 ]);
                 array_push($data['informeList'], $c);
             }
@@ -234,7 +235,7 @@ class ViewController extends Controller {
                 $mensagem .= '<ul>';
 
                 foreach ($data['informeList'] as $item) {
-                    $mensagem .= '<li>' . $item->texto . '</li>';
+                    $mensagem .= '<li><a target="_blank" href="' . $item->endereco . '">' . $item->texto . '</a></li>';
                 }
                 $mensagem .= '</ul></p>';
             }
@@ -265,11 +266,129 @@ class ViewController extends Controller {
             $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 12px; margin-bottom: 10px;">';
             $mensagem .= '<span style="font-weight: bold; color: rgb(33, 33, 33); display: inline;" class="txt signature_companyname-target sig-hide">Bot Kugel Info!</span>';
             $mensagem .= '<span class="company-sep break" style="display: inline;"></span>';
-            $mensagem .= '<br>';
-            $mensagem .= '<a class="link signature_website-target sig-hide" target="_blank" href="http://www.secasando.com.br" style="color: rgb(71, 124, 204); text-decoration: none; display: inline;">http://kinfo-kugel.local/ConsultaNFe</a>';
             $mensagem .= '</p></body></html>';
 
             mail($email, $assunto, $mensagem, $cabecalhos);
+        }
+
+        return $this->view->render($response, 'consultanfe.twig', compact('data'));
+    }
+
+    public function viewConsultaNFeSE($request, $response) {
+        $dataSite = SefazUtils::getConsultaNFe();
+        $mostrar = $request->getAttribute('mostrar');
+
+        if ($mostrar == '') {
+            $mostrar = 'naovistos';
+        }
+
+        $data = [
+            'contAtivList' => [],
+            'contAgendList' => [],
+            'informeList' => [],
+            'docDiversosList' => [],
+            'docNotaTecList' => []
+        ];
+
+        // ContingenciaAtivada
+        foreach ($dataSite['contAtivList'] as $item) {
+            $result = ContingenciaAtivada::where('texto', $item)->first();
+            if (!$result) {
+                $c = ContingenciaAtivada::create([
+                    'texto' => $item,
+                    'visto' => 'N',
+                ]);
+                array_push($data['contAtivList'], $c);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['contAtivList'], $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['contAtivList'], $result);
+                }
+            }
+        }
+
+        // ContingenciaAgendada
+        foreach ($dataSite['contAgendList'] as $item) {
+            $result = ContingenciaAgendada::where('texto', $item)->first();
+            if (!$result) {
+                $c = ContingenciaAgendada::create([
+                    'texto' => $item,
+                    'visto' => 'N',
+                ]);
+                array_push($data['contAgendList'], $c);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['contAgendList'], $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['contAgendList'], $result);
+                }
+            }
+        }
+
+        // Informe
+        foreach ($dataSite['informeList'] as $item) {
+            $result = Informe::where('texto', $item['texto'])->first();
+            if (!$result) {
+                $c = Informe::create([
+                    'texto' => $item['texto'],
+                    'visto' => 'N',
+                    'endereco' => $item['endereco'],
+                ]);
+                array_push($data['informeList'], $c);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['informeList'], $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['informeList'], $result);
+                }
+            }
+        }
+
+        // DocumentoDiverso
+        foreach ($dataSite['docDiversosList'] as $item) {
+            $result = DocumentoDiverso::where('texto', $item)->first();
+            if (!$result) {
+                $c = DocumentoDiverso::create([
+                    'texto' => $item,
+                    'visto' => 'N',
+                ]);
+                array_push($data['docDiversosList'], $c);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['docDiversosList'], $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['docDiversosList'], $result);
+                }
+            }
+        }
+
+        // DocumentoTecnico;
+        foreach ($dataSite['docNotaTecList'] as $item) {
+            $result = DocumentoTecnico::where('texto', $item)->first();
+            if (!$result) {
+                $c = DocumentoTecnico::create([
+                    'texto' => $item,
+                    'visto' => 'N',
+                ]);
+                array_push($data['docNotaTecList'], $c);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['docNotaTecList'], $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['docNotaTecList'], $result);
+                }
+            }
         }
 
         return $this->view->render($response, 'consultanfe.twig', compact('data'));

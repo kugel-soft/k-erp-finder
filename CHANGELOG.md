@@ -1,3 +1,7 @@
+### 01.08.2017a ###
+- Alterado para permitir mostrar itens vistos ou não vistos
+- Alterado para incluir url do item informe na tela e no e-mail.
+
 ### 27.07.2017a ###
 - Adicionado rotina para verificação de novos itens na página da sefaz.
 - Corrigido envio de e-mail que não era disparado ao achar um novo item na sefaz.
