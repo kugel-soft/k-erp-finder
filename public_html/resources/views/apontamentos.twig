@@ -1,0 +1,84 @@
+{% extends 'templates/wind.twig' %}
+
+{% block content %}
+    <input type="hidden" id="pagina" value="{{ url }}">
+    
+    <div class="row">
+        <div class="col-sm-12">
+            <select id="selectFuncionario" class="form-control" name="selectFuncionario">
+                <option value="" {{ codFun == ''? 'selected' : '' }}>Selecione um funcionário...</option>
+                {% for f in funcList %}
+                    <option value="{{ f.COD_FUN }}" {{ codFun == f.COD_FUN? 'selected' : '' }}>{{ f.APELIDO }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-12">
+            
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                {% if apontList is not empty %}
+                    <hr>
+                    <b>Total cobrável:</b> {{ totalCobravel }} -
+                    <b>Total cortesia:</b> {{ totalNaoCobravel }} -
+                    <b>Total geral:</b> {{ totalGeral }}
+                    <hr>
+                    {% for ap in apontList %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingOne">
+                                <h4 class="panel-title">
+                                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
+                                        <b>Ordem de serviço:</b> {{ ap.NUM_OS }} - {{ ap.NOME_FANTASIA }} ({{ ap.COD_CLI }}) - {{ ap.DESCR_SERV_CLI }}
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapse{{loop.index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{loop.index}}">
+                                <div class="panel-body">
+                                    {% for serv in ap.servicos %}
+                                        <p>
+                                            <b>Serviço:</b> {{ serv.NUM_SEQ }}<br>
+                                            <b>Descrição:</b> {{ serv.DESCR_APONT_SERVICO }}
+                                            {% if serv.TOTAL_COBRAVEL > 0 %}
+                                                <br><b>Horas cobráveis:</b> {{ serv.TOTAL_COBRAVEL }}
+                                            {% endif %}
+                                            {% if serv.TOTAL_NAO_COBRAVEL > 0 %}
+                                                <br><b>Horas cortesia:</b> {{ serv.TOTAL_NAO_COBRAVEL }}
+                                            {% endif %}
+                                        </p>
+                                        {% if not loop.last %}
+                                            <hr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="panel-footer">
+                                    {% if ap.HORAS_COBRAVEIS > 0 %}
+                                        <b>Total cobrável: </b> {{ ap.HORAS_COBRAVEIS }}
+                                    {% endif %}
+                                    {% if ap.HORAS_NAO_COBRAVEIS > 0 %}
+                                        <b>Total cortesia: </b> {{ ap.HORAS_NAO_COBRAVEIS }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h3>Nenhum apontamento encontrado!</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>    
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function() {
+        $("#selectFuncionario").change(function() {
+            var value = $(this).find('option:selected');
+            if (value) {
+                window.location.href = $('#pagina').val() + "/" + value.val();
+            }
+        });
+    });
+</script>
+{% endblock %}

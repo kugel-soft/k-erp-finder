@@ -58,6 +58,12 @@ class ViewController extends Controller {
             $this->flash->addMessage('error', 'Item não encontrado para alteração!');
             return $response->withRedirect($this->router->pathFor('home'));
         }
+        if (strpos($p->situacao, "<br>") !== FALSE) {
+            $p->situacao = str_replace("<br>", "\r\n", $p->situacao);
+        }
+        if (strpos($p->solucao, "<br>") !== FALSE) {
+            $p->solucao = str_replace("<br>", "\r\n", $p->solucao);
+        }
         return $this->view->render($response, 'alterar.twig', compact('p'));
     }
 

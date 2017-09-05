@@ -38,11 +38,13 @@
                             <div class="source-code-solucao">
                                 <p>
                                     {{ item.getSolucaoTexto() }}
-                                    {% if item.mostrarBotaoVerMais() %}
-                                        <span class="label label-default"><a href="{{ path_for('problema', {'id': item.id}) }}" class="ver-mais-link">VER MAIS</a></span>
-                                    {% endif %}
                                 </p>
                             </div>
+                            
+                            {% if item.mostrarBotaoVerMais() %}
+                                <br>
+                                <span class="label label-default"><a href="{{ path_for('problema', {'id': item.id}) }}" class="ver-mais-link">Ver problema e solução</a></span>
+                            {% endif %}
                         </div>
                         <div class="panel-footer">
                             <i class="fa fa-user"></i> {{ item.criador }}<br>

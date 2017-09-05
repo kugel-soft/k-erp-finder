@@ -62,13 +62,13 @@ class ProblemaController extends Controller {
                     $tag = Tag::create([
                         'nome' => trim($t),
                     ]);
-
-                    // relacionamento
-                    $pt = ProblemaTag::create([
-                        'problema_id' => $problema->id,
-                        'tag_id' => $tag->id,
-                    ]);
                 }
+
+                // relacionamento
+                $pt = ProblemaTag::create([
+                    'problema_id' => $problema->id,
+                    'tag_id' => $tag->id,
+                ]);
             }
 
             // tabelas

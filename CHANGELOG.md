@@ -1,3 +1,7 @@
+### 05.09.2017a ###
+- Corrigido bug de não adicionar tag ou tabela a um item quando já existia.
+- Adicionado página de consulta de apontamentos do funcionário.
+
 ### 01.08.2017a ###
 - Alterado para permitir mostrar itens vistos ou não vistos
 - Alterado para incluir url do item informe na tela e no e-mail.

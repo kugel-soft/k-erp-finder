@@ -66,3 +66,8 @@ $app->get('/Problemas/Categoria/{id}', \Kugel\Controllers\PesquisaController::cl
 // Live searchs
 $app->get ('/livesearch/{termo}',       \Kugel\Controllers\LiveController::class . ':getLiveSearch');
 $app->get ('/liveselect/{termo}',       \Kugel\Controllers\LiveController::class . ':getLiveSelect');
+
+// Apontamentos
+$app->get ('/Apontamentos[/{codFun}]',
+    \Kugel\Controllers\ApontamentosController::class . ':viewApontamentos')
+        ->setName('apontamentos');
