@@ -10,7 +10,9 @@ use Kugel\Models\ContingenciaAgendada;
 use Kugel\Models\Informe;
 use Kugel\Models\DocumentoDiverso;
 use Kugel\Models\DocumentoTecnico;
+use Kugel\Models\ESocial;
 
+use Kugel\Utils\ESocialUtils;
 use Kugel\Utils\SefazUtils;
 
 class ViewController extends Controller {
@@ -277,7 +279,132 @@ class ViewController extends Controller {
             mail($email, $assunto, $mensagem, $cabecalhos);
         }
 
-        return $this->view->render($response, 'consultanfe.twig', compact('data'));
+        return "OK";
+    }
+
+    public function viewNoticiasESocialSE($request, $response) {
+        $dataSite = ESocialUtils::getNoticias();
+        $data = [];
+        $mostrar = $request->getAttribute('mostrar');
+
+        if ($mostrar == '') {
+            $mostrar = 'naovistos';
+        }
+
+        foreach ($dataSite as $item) {
+            $result = ESocial::where('url', $item['url'])->first();
+            if (!$result) {
+                $c = ESocial::create([
+                    'titulo'       => $item['title'],
+                    'url'          => $item['url'],
+                    'texto_url'    => $item['url_text'],
+                    'descricao'    => $item['description'],
+                    'publicado_em' => $item['when'],
+                    'publicado_as' => $item['at'],
+                    'visto'        => 'N',
+                ]);
+                array_push($data, $c);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data, $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data, $result);
+                }
+            }
+        }
+
+        return $this->view->render($response, 'consultaesocial.twig', compact('data'));
+    }
+
+    public function viewNoticiasESocial($request, $response) {
+        $dataSite = ESocialUtils::getNoticias();
+        $data = [];
+        $mostrar = $request->getAttribute('mostrar');
+
+        if ($mostrar == '') {
+            $mostrar = 'naovistos';
+        }
+
+        foreach ($dataSite as $item) {
+            $result = ESocial::where('url', $item['url'])->first();
+            if (!$result) {
+                $c = ESocial::create([
+                    'titulo'       => $item['title'],
+                    'url'          => $item['url'],
+                    'texto_url'    => $item['url_text'],
+                    'descricao'    => $item['description'],
+                    'publicado_em' => $item['when'],
+                    'publicado_as' => $item['at'],
+                    'visto'        => 'N',
+                ]);
+                array_push($data, $c);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data, $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data, $result);
+                }
+            }
+        }
+
+        /* Envia o e-mail com os novos registros */
+        $enviarEmail = count($data) > 0;
+
+        if ($enviarEmail) {
+            $email = "ricardo@kugel.com.br";
+            $from = "Ricardo Montania <ricardo.montania@gmail.com>";
+            $comCopiaPara = "Sigi <sigi@kugel.com.br>";
+            $assunto = "Novas noticias no portal eSocial!";
+            $destinatario = "Ricardo Montania <$email>";
+
+            $cabecalhos =
+                "MIME-Version: 1.0" . "\r\n".
+                "Content-type: text/html; charset=utf-8" . "\r\n".
+                "To: _DESTINATARIO_ " . "\r\n".
+                "From: {$from}" . "\r\n".
+                "Cc: {$comCopiaPara}" . "\r\n".
+                "Reply-To: {$from}" . "\r\n".
+                "X-Mailer: PHP/".phpversion() . "\r\n";
+
+            $cabecalhos = str_replace("_DESTINATARIO_", $destinatario, $cabecalhos);
+
+            $mensagem =
+                '<html>'.
+                '  <body>'.
+                '   <p style="font-family: Helvetica, Arial, sans-serif; font-size: 18px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">'.
+                '     Olá!'.
+                '   </p>'.
+                '   <br>'.
+                '   <p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">'.
+                '     Novas notícias foram publicadas no portal do eSocial!'.
+                '   </p>'.
+                '   <br>';
+
+                foreach ($data as $item) {
+                    $mensagem .=
+                '   <p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: rgb(33, 33, 33); margin-bottom: 10px;">'.
+                '     Título: ' . (empty($item->titulo)? 'Não informado' : $item->titulo) . '<br>'.
+                '     URL: <a target="_blank" href="'.$item->url.'">'.$item->texto_url.'</a><br>'.
+                '     Descrição: ' . $item->descricao . '<br>'.
+                '     Publicado em: ' . $item->publicado_em . ' às ' . $item->publicado_as .
+                '   </p>';
+                }
+
+            // Rodapé
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Atenciosamente,<br></p>';
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 12px; margin-bottom: 10px;">';
+            $mensagem .= '<span style="font-weight: bold; color: rgb(33, 33, 33); display: inline;" class="txt signature_companyname-target sig-hide">Bot Kugel Info!</span>';
+            $mensagem .= '<span class="company-sep break" style="display: inline;"></span>';
+            $mensagem .= '</p></body></html>';
+
+            mail($email, $assunto, $mensagem, $cabecalhos);
+        }
+
+        return "OK";
     }
 
     public function viewConsultaNFeSE($request, $response) {

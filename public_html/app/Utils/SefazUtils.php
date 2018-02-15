@@ -308,9 +308,11 @@ class SefazUtils {
                         foreach ($divIdentNormal->find('p') as $p) {
                             $txt = $p->find('span')[0]->text;
                             $cont = $p->text;
-                            array_push($data['docNotaTecList'], $ano . ' - ' . $txt . '|' .$cont);
+                            array_push($data['docNotaTecList'], $ano . ' - ' . $txt . ' - ' .$cont);
                         }
                     }
+
+                    break;
                 }
             }
         }

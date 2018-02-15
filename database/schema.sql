@@ -109,3 +109,17 @@ create table documentos_tecnicos (
     updated_at timestamp,
     primary key(id)
 );
+
+create table esocial (
+    id int auto_increment,
+    titulo varchar(100) null,
+    url varchar(300) null,
+    texto_url varchar(500) null,
+    descricao varchar(1000) null,
+    publicado_em varchar(12) null,
+    publicado_as varchar(8) null,
+    visto char(1) not null,
+    created_at timestamp,
+    updated_at timestamp,
+    primary key(id)
+);

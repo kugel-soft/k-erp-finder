@@ -24,6 +24,13 @@ $app->get('/ConsultaNFeSE[/{mostrar}]',
     \Kugel\Controllers\ViewController::class . ':viewConsultaNFeSE')
         ->setName('consulta-nfe');
 
+$app->get('/NoticiasESocial',
+    \Kugel\Controllers\ViewController::class . ':viewNoticiasESocial');
+
+$app->get('/NoticiasESocialSE[/{mostrar}]',
+    \Kugel\Controllers\ViewController::class . ':viewNoticiasESocialSE')
+        ->setName('consulta-esocial');
+
 $app->get('/ConfirmarItem/ContAtiv/{id}',
     \Kugel\Controllers\ConsultaNFeController::class . ':getConfirmContAtiv')
         ->setName('conf-cont-ativ');
@@ -43,6 +50,10 @@ $app->get('/ConfirmarItem/DocDiv/{id}',
 $app->get('/ConfirmarItem/DocTec/{id}',
     \Kugel\Controllers\ConsultaNFeController::class . ':getConfirmDocTec')
         ->setName('conf-doc-tec');
+
+$app->get('/ConfirmarItem/ESocial/{id}',
+    \Kugel\Controllers\ESocialController::class . ':getConfirmNoticia')
+        ->setName('conf-esocial');
 
 $app->get('/Alterar/{id}',
     \Kugel\Controllers\ViewController::class . ':viewAlterar')
