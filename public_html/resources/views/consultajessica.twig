@@ -1,0 +1,37 @@
+{% extends 'templates/wind.twig' %}
+
+{% block content %}
+    <a href="{{ path_for('consulta-jessica', {'mostrar': 'vistos'}) }}">Mostrar Vistos</a> |
+    <a href="{{ path_for('consulta-jessica', {'mostrar': 'naovistos'}) }}">Mostrar Não Vistos</a>
+
+    <h3>Vagas Jéssica</h3>
+    <ul class="list-group">
+        {% for item in data %}
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading">
+                    <a target="_blank" href="{{ item.urlVaga }}">
+                        {{ item.nomeVaga }}
+                    </a>
+                </h4>
+                <p class="list-group-item-text">
+                    Empresa: {{ item.nomeEmpresa | raw }} - Tipo da vaga: {{ item.tipoVaga }}<br>
+                    Descrição: {{ item.miniTextoVaga | raw }}
+                    <span class="pull-right">
+                        {% if item.visto == 'N' %}
+                            <a href="{{ path_for('conf-esocial', {'id': item.id}) }}" title="Marcar como visto!">
+                                <i class="fa fa-check-square"></i>
+                            </a>
+                        {% else %}
+                            <i class="fa fa-check-square"></i>
+                        {% endif %}
+                    </span>
+                </p>
+                <p class="list-group-item-text">
+                    <b>Publicado em {{ item.dataPublicacao }}</b>
+                </p>
+            </li>
+        {% else %}
+            <li class="list-group-item">Nenhuma vaga nova!</b></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

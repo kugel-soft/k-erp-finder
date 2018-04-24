@@ -11,9 +11,11 @@ use Kugel\Models\Informe;
 use Kugel\Models\DocumentoDiverso;
 use Kugel\Models\DocumentoTecnico;
 use Kugel\Models\ESocial;
+use Kugel\Models\Vaga;
 
 use Kugel\Utils\ESocialUtils;
 use Kugel\Utils\SefazUtils;
+use Kugel\Utils\VagasUtils;
 
 class ViewController extends Controller {
     /*
@@ -102,7 +104,7 @@ class ViewController extends Controller {
             if (!$result) {
                 $c = ContingenciaAtivada::create([
                     'texto' => $item,
-                    'visto' => 'N',
+                    'visto' => 'S',
                 ]);
                 array_push($data['contAtivList'], $c);
             }
@@ -119,7 +121,7 @@ class ViewController extends Controller {
             if (!$result) {
                 $c = ContingenciaAgendada::create([
                     'texto' => $item,
-                    'visto' => 'N',
+                    'visto' => 'S',
                 ]);
                 array_push($data['contAgendList'], $c);
             }
@@ -138,7 +140,7 @@ class ViewController extends Controller {
             if (!$result) {
                 $c = Informe::create([
                     'texto' => $item['texto'],
-                    'visto' => 'N',
+                    'visto' => 'S',
                     'endereco' => $item['endereco'],
                 ]);
                 array_push($data['informeList'], $c);
@@ -156,7 +158,7 @@ class ViewController extends Controller {
             if (!$result) {
                 $c = DocumentoDiverso::create([
                     'texto' => $item,
-                    'visto' => 'N',
+                    'visto' => 'S',
                 ]);
                 array_push($data['docDiversosList'], $c);
             }
@@ -173,7 +175,7 @@ class ViewController extends Controller {
             if (!$result) {
                 $c = DocumentoTecnico::create([
                     'texto' => $item,
-                    'visto' => 'N',
+                    'visto' => 'S',
                 ]);
                 array_push($data['docNotaTecList'], $c);
             }
@@ -318,6 +320,125 @@ class ViewController extends Controller {
         return $this->view->render($response, 'consultaesocial.twig', compact('data'));
     }
 
+    public function viewConsultaJessicaSE($request, $response) {
+        $dataSite = VagasUtils::getVagas();
+
+        $data = [];
+        $mostrar = $request->getAttribute('mostrar');
+
+        if ($mostrar == '') {
+            $mostrar = 'naovistos';
+        }
+
+        foreach ($dataSite as $item) {
+            $result = Vaga::where('urlVaga', $item['urlVaga'])->first();
+            if (!$result) {
+                $v = Vaga::create([
+                    'nomeVaga'       => $item['nomeVaga'],
+                    'nomeEmpresa'    => $item['nomeEmpresa'],
+                    'tipoVaga'       => $item['tipoVaga'],
+                    'miniTextoVaga'  => $item['miniTextoVaga'],
+                    'dataPublicacao' => $item['dataPublicacao'],
+                    'urlVaga'        => $item['urlVaga'],
+                    'visto'          => 'N',
+                ]);
+                array_push($data, $v);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data, $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data, $result);
+                }
+            }
+        }
+
+        return $this->view->render($response, 'consultajessica.twig', compact('data'));
+    }
+
+    public function viewConsultaJessica($request, $response) {
+        $dataSite = VagasUtils::getVagas();
+
+        $data = [];
+        $mostrar = $request->getAttribute('mostrar');
+
+        if ($mostrar == '') {
+            $mostrar = 'naovistos';
+        }
+
+        foreach ($dataSite as $item) {
+            $result = Vaga::where('urlVaga', $item['urlVaga'])->first();
+            if (!$result) {
+                $v = Vaga::create([
+                    'nomeVaga'       => $item['nomeVaga'],
+                    'nomeEmpresa'    => $item['nomeEmpresa'],
+                    'tipoVaga'       => $item['tipoVaga'],
+                    'miniTextoVaga'  => $item['miniTextoVaga'],
+                    'dataPublicacao' => $item['dataPublicacao'],
+                    'urlVaga'        => $item['urlVaga'],
+                    'visto'          => 'S',
+                ]);
+                array_push($data, $v);
+            }
+            else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data, $result);
+                }
+                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data, $result);
+                }
+            }
+        }
+
+        /* Envia o e-mail com os novos registros */
+        $enviarEmail = count($data) > 0;
+
+        if ($enviarEmail) {
+            // Enviar e-mail
+            $email = "Ricardo Campos <ricardompcampos@gmail.com>";
+            $from = "Ricardo Montania <ricardo.montania@gmail.com>";
+            $comCopiaPara = "Jéssica Schmoller <jeschmoller@gmail.com>";
+            $assunto = "Novas vagas anunciadas!";
+
+            $cabecalhos =
+                "MIME-Version: 1.0" . "\r\n".
+                "Content-type: text/html; charset=utf-8" . "\r\n".
+                "To: _DESTINATARIO_ " . "\r\n".
+                "From: {$from}" . "\r\n".
+                "Cc: {$comCopiaPara}" . "\r\n".
+                "Reply-To: {$from}" . "\r\n".
+                "X-Mailer: PHP/".phpversion() . "\r\n";
+
+            $cabecalhos = str_replace("_DESTINATARIO_", $email, $cabecalhos);
+
+            $mensagem = '<html><body><p style="font-family: Helvetica, Arial, sans-serif; font-size: 18px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Olá lindinha! =D</p>'.
+                '<br><p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Encontrei novas vagas de trabalho que podem ser do seu interesse!</p>'.
+                '<br>';
+
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">';
+            $mensagem .= 'São elas:';
+            $mensagem .= '<ul>';
+
+            foreach ($data as $item) {
+                $mensagem .= '<li><a target="_blank" href="' . $item->urlVaga . '">' . $item->nomeVaga . '</a> - Empresa: '. $item->nomeEmpresa .', Tipo da vaga: '. $item->tipoVaga .', Descrição: '. $item->miniTextoVaga .', Publicado em: '. $item->dataPublicacao .'</li>';
+            }
+            $mensagem .= '</ul></p>';
+
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Beijinhos no coração e boa sorte!<br></p>';
+
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Atenciosamente,<br></p>';
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 12px; margin-bottom: 10px;">';
+            $mensagem .= '<span style="font-weight: bold; color: rgb(33, 33, 33); display: inline;" class="txt signature_companyname-target sig-hide">Bot Caça Vagas do Ricardo!</span>';
+            $mensagem .= '<span class="company-sep break" style="display: inline;"></span>';
+            $mensagem .= '</p></body></html>';
+
+            mail($email, $assunto, $mensagem, $cabecalhos);
+        }
+
+        return "OK";
+    }
+
     public function viewNoticiasESocial($request, $response) {
         $dataSite = ESocialUtils::getNoticias();
         $data = [];
@@ -337,7 +458,7 @@ class ViewController extends Controller {
                     'descricao'    => $item['description'],
                     'publicado_em' => $item['when'],
                     'publicado_as' => $item['at'],
-                    'visto'        => 'N',
+                    'visto'        => 'S',
                 ]);
                 array_push($data, $c);
             }

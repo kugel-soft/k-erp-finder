@@ -24,6 +24,13 @@ $app->get('/ConsultaNFeSE[/{mostrar}]',
     \Kugel\Controllers\ViewController::class . ':viewConsultaNFeSE')
         ->setName('consulta-nfe');
 
+$app->get('/ConsultaJessicaSE[/{mostrar}]',
+    \Kugel\Controllers\ViewController::class . ':viewConsultaJessicaSE')
+        ->setName('consulta-jessica');
+
+$app->get('/ConsultaJessica',
+    \Kugel\Controllers\ViewController::class . ':viewConsultaJessica');
+
 $app->get('/NoticiasESocial',
     \Kugel\Controllers\ViewController::class . ':viewNoticiasESocial');
 

@@ -5,7 +5,7 @@ namespace Kugel\Utils;
 class StringUtils {
     public static function startsWith($haystack, $needle) {
         $len = strlen($needle);
-        return (substr($haystack, 0, $length) === $needle);
+        return (substr($haystack, 0, $len) === $needle);
     }
 
     public static function endsWith($haystack, $needle) {

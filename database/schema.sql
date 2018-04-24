@@ -123,3 +123,17 @@ create table esocial (
     updated_at timestamp,
     primary key(id)
 );
+
+create table vagas (
+	id int auto_increment,
+	nomeVaga varchar(600) NOT NULL,
+	nomeEmpresa varchar(100) NOT NULL,
+	tipoVaga varchar(30) NOT NULL,
+	miniTextoVaga  varchar(300) NOT NULL,
+	dataPublicacao varchar(30) NOT NULL,
+	urlVaga varchar(300) NOT NULL,
+	visto char(1) not null,
+	created_at timestamp,
+	updated_at timestamp,
+	primary key(id)
+);
