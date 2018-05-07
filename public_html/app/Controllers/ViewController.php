@@ -333,16 +333,30 @@ class ViewController extends Controller {
         foreach ($dataSite as $item) {
             $result = Vaga::where('urlVaga', $item['urlVaga'])->first();
             if (!$result) {
-                $v = Vaga::create([
-                    'nomeVaga'       => $item['nomeVaga'],
-                    'nomeEmpresa'    => $item['nomeEmpresa'],
-                    'tipoVaga'       => $item['tipoVaga'],
-                    'miniTextoVaga'  => $item['miniTextoVaga'],
-                    'dataPublicacao' => $item['dataPublicacao'],
-                    'urlVaga'        => $item['urlVaga'],
-                    'visto'          => 'N',
-                ]);
-                array_push($data, $v);
+                try {
+                    $v = Vaga::create([
+                        'nomeVaga'       => $item['nomeVaga'],
+                        'nomeEmpresa'    => $item['nomeEmpresa'],
+                        'tipoVaga'       => $item['tipoVaga'],
+                        'miniTextoVaga'  => $item['miniTextoVaga'],
+                        'dataPublicacao' => $item['dataPublicacao'],
+                        'urlVaga'        => $item['urlVaga'],
+                        'visto'          => 'N',
+                    ]);
+                    array_push($data, $v);
+                }
+                catch (\Illuminate\Database\QueryException $e) {
+                    $v = Vaga::create([
+                        'nomeVaga'       => $item['nomeVaga'],
+                        'nomeEmpresa'    => $item['nomeEmpresa'],
+                        'tipoVaga'       => $item['tipoVaga'],
+                        'miniTextoVaga'  => utf8_encode($item['miniTextoVaga']),
+                        'dataPublicacao' => $item['dataPublicacao'],
+                        'urlVaga'        => $item['urlVaga'],
+                        'visto'          => 'N',
+                    ]);
+                    array_push($data, $v);
+                }
             }
             else {
                 if ($mostrar == 'vistos' && $result->visto == 'S') {
@@ -370,16 +384,22 @@ class ViewController extends Controller {
         foreach ($dataSite as $item) {
             $result = Vaga::where('urlVaga', $item['urlVaga'])->first();
             if (!$result) {
-                $v = Vaga::create([
-                    'nomeVaga'       => $item['nomeVaga'],
-                    'nomeEmpresa'    => $item['nomeEmpresa'],
-                    'tipoVaga'       => $item['tipoVaga'],
-                    'miniTextoVaga'  => $item['miniTextoVaga'],
-                    'dataPublicacao' => $item['dataPublicacao'],
-                    'urlVaga'        => $item['urlVaga'],
-                    'visto'          => 'S',
-                ]);
-                array_push($data, $v);
+                try {
+                    $v = Vaga::create([
+                        'nomeVaga'       => $item['nomeVaga'],
+                        'nomeEmpresa'    => $item['nomeEmpresa'],
+                        'tipoVaga'       => $item['tipoVaga'],
+                        'miniTextoVaga'  => $item['miniTextoVaga'],
+                        'dataPublicacao' => $item['dataPublicacao'],
+                        'urlVaga'        => $item['urlVaga'],
+                        'visto'          => 'S',
+                    ]);
+                    array_push($data, $v);
+                }
+                catch (\Illuminate\Database\QueryException $e) {
+                    die('Erro no SQL!');
+                }
+                
             }
             else {
                 if ($mostrar == 'vistos' && $result->visto == 'S') {
