@@ -1,3 +1,16 @@
+### 23.05.2018a ###
+- Adicionado ideia da logo Koogle
+- Adicionado footer
+
+### 07.05.2018a ###
+- Corrigido bug de caracter incorreto nas buscas
+
+### 24.04.2018a ###
+- Busca de vagas de empresa
+
+### 15.02.2018a ###
+- Busca de informações do eSocial
+
 ### 05.09.2017a ###
 - Corrigido bug de não adicionar tag ou tabela a um item quando já existia.
 - Adicionado página de consulta de apontamentos do funcionário.

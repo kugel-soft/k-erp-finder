@@ -23,7 +23,7 @@ class ViewController extends Controller {
     */
     public function viewIndex($request, $response) {
         $problemas = Problema::orderBy('updated_at', 'desc')->paginate(5)->appends($request->getParams());
-        return $this->view->render($response, 'pesquisa.twig', compact('problemas'));
+        return $this->view->render($response, 'index.twig', compact('problemas'));
     }
 
     /*

@@ -18,6 +18,8 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
 
+
+
 </head>
 <body>
     {% include 'templates/partials/navigation.twig' %}
@@ -27,7 +29,11 @@
         <!-- Header -->
         <header>
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-offset-2 col-sm-8">
+                    <div class="text-center logo-index">
+                        <img alt="Koogle" src="img/logo_koogle.png" width="300">
+                    </div>
+
                     <form id="form" action="{{ path_for('pesquisar') }}" method="GET" autocomplete="off">
                         <div class="input-group">
                             <input class="form-control" type="text" id="termo" name="termo" placeholder="Termo de pesquisa" value="{{ termo }}" onkeyup="livesearch(this.value)">
@@ -40,66 +46,6 @@
                 </div>
             </div>
         </header>
-
-        <hr>
-
-        <div class="row">
-            <!-- Main contente -->
-            <div class="col-sm-9">
-                {% block content %} {% endblock %}
-            </div>
-
-            <!-- Right sidebar -->
-            <div class="col-sm-3">
-                <!-- Tags -->
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Tags
-                            </div>
-                            <div class="panel-body">
-                                {% for tag in tags %}
-                                    <a href="{{ path_for('tag', {'id': tag.id}) }}"><span class="label label-success">{{ tag.nome }}</span></a>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tabelas -->
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Tabelas
-                            </div>
-                            <div class="panel-body">
-                                {% for tabela in tabelas %}
-                                    <a href="{{ path_for('tabela', {'id': tabela.id}) }}"><span class="label label-success">{{ tabela.nome }}</span></a>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Categorias -->
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Categorias
-                            </div>
-                            <ul class="list-group">
-                            {% for categoria in categorias %}
-                                <li class="list-group-item"><a href="{{ path_for('categoria', {'id': categoria.id}) }}">{{ categoria.nome }}</a></li>
-                            {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <footer>

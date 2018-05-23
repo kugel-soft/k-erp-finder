@@ -32,3 +32,15 @@ time {
 .ver-mais-link:hover {
     color: lightblue;
 }
+
+.logo-index {
+    margin-top: 120px;
+    margin-bottom: 20px;
+}
+
+footer {
+    position: fixed;
+    height: 30px;
+    bottom: 0;
+    width: 100%;
+}
