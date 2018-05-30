@@ -92,7 +92,7 @@ class ProblemaController extends Controller {
 
             $this->db->getConnection()->getPdo()->commit();
             $this->flash->addMessage('success', 'Item adicionado com sucesso!');
-            return $response->withRedirect($this->router->pathFor('home'));
+            return $response->withRedirect($this->router->pathFor('index'));
         }
         catch (\Excepion $e) {
             $this->db->getConnection()->getPdo()->rollback();
@@ -213,7 +213,7 @@ class ProblemaController extends Controller {
         $problema = Problema::find($id);
         if (!$problema) {
             $this->flash->addMessage('error', 'Item não encontrado para exclusão!');
-            return $response->withRedirect($this->router->pathFor('home'));
+            return $response->withRedirect($this->router->pathFor('index'));
         }
 
         try {
@@ -267,7 +267,7 @@ class ProblemaController extends Controller {
 
             $this->db->getConnection()->getPdo()->commit();
             $this->flash->addMessage('success', 'Item excluído com sucesso!');
-            return $response->withRedirect($this->router->pathFor('home'));
+            return $response->withRedirect($this->router->pathFor('index'));
         }
         catch (Excepion $e) {
             $this->db->getConnection()->getPdo()->rollback();

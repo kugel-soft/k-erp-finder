@@ -47,7 +47,7 @@ class ViewController extends Controller {
         $problema = Problema::find($request->getAttribute('id'));
         if (!$problema) {
             $this->flash->addMessage('error', 'Item não encontrado! Tente a pesquisa!');
-            return $response->withRedirect($this->router->pathFor('home'));
+            return $response->withRedirect($this->router->pathFor('index'));
         }
         return $this->view->render($response, 'problema.twig', compact('problema'));
     }
@@ -60,7 +60,7 @@ class ViewController extends Controller {
         $p = Problema::find($id);
         if (!$p) {
             $this->flash->addMessage('error', 'Item não encontrado para alteração!');
-            return $response->withRedirect($this->router->pathFor('home'));
+            return $response->withRedirect($this->router->pathFor('index'));
         }
         if (strpos($p->situacao, "<br>") !== FALSE) {
             $p->situacao = str_replace("<br>", "\r\n", $p->situacao);
@@ -79,7 +79,7 @@ class ViewController extends Controller {
         $p = Problema::find($id);
         if (!$p) {
             $this->flash->addMessage('error', 'Item não encontrado para exclusão!');
-            return $response->withRedirect($this->router->pathFor('home'));
+            return $response->withRedirect($this->router->pathFor('index'));
         }
         return $this->view->render($response, 'excluir.twig', compact('p'));
     }
