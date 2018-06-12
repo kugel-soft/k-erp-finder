@@ -80,6 +80,7 @@ class VagasUtils {
                     'tipoVaga' => $tipoVaga,
                     'miniTextoVaga' => $miniTextoVaga,
                     'dataPublicacao' => $dataPublicacao,
+                    'isRH' => FALSE,
                 ];
 
                 // Filtra as vagas de interesse
@@ -100,6 +101,20 @@ class VagasUtils {
 
                 if ($add) {
                     array_push($data, $vaga);
+                } else {
+                    // Vagas de RH para a esposa do Gerson
+                    if (StringUtils::contains(strtolower($nomeVaga), 'rh')) {
+                        $vaga['isRH'] = TRUE;
+                    }
+                    if (StringUtils::contains(strtolower($nomeVaga), 'recursos')) {
+                        $vaga['isRH'] = TRUE;
+                    }
+                    if (StringUtils::contains(strtolower($nomeVaga), 'humanos')) {
+                        $vaga['isRH'] = TRUE;
+                    }
+                    if ($vaga['isRH']) {
+                        array_push($data, $vaga);
+                    }
                 }
             }
         }
@@ -163,6 +178,7 @@ class VagasUtils {
                     'tipoVaga' => $tipoVaga,
                     'miniTextoVaga' => $miniTextoVaga,
                     'dataPublicacao' => $dataPublicacao,
+                    'isRH' => FALSE,
                 ];
 
                 // Filtra as vagas de interesse
@@ -183,6 +199,20 @@ class VagasUtils {
 
                 if ($add) {
                     array_push($data, $vaga);
+                } else {
+                    // Vagas de RH para a esposa do Gerson
+                    if (StringUtils::contains(strtolower($nomeVaga), 'rh')) {
+                        $vaga['isRH'] = TRUE;
+                    }
+                    if (StringUtils::contains(strtolower($nomeVaga), 'recursos')) {
+                        $vaga['isRH'] = TRUE;
+                    }
+                    if (StringUtils::contains(strtolower($nomeVaga), 'humanos')) {
+                        $vaga['isRH'] = TRUE;
+                    }
+                    if ($vaga['isRH']) {
+                        array_push($data, $vaga);
+                    }
                 }
             }
         }

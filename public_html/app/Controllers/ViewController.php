@@ -394,6 +394,7 @@ class ViewController extends Controller {
                         'urlVaga'        => $item['urlVaga'],
                         'visto'          => 'S',
                     ]);
+                    $v->isRH = $item['isRH'];
                     array_push($data, $v);
                 }
                 catch (\Illuminate\Database\QueryException $e) {
@@ -402,6 +403,7 @@ class ViewController extends Controller {
                 
             }
             else {
+                $result->isRH = $item['isRH'];
                 if ($mostrar == 'vistos' && $result->visto == 'S') {
                     array_push($data, $result);
                 }
@@ -412,9 +414,19 @@ class ViewController extends Controller {
         }
 
         /* Envia o e-mail com os novos registros */
-        $enviarEmail = count($data) > 0;
+        $enviarEmailJessica = FALSE;
+        $enviarEmailGerson = FALSE;
 
-        if ($enviarEmail) {
+        foreach ($data as $item) {
+            if ($item->isRH) {
+                $enviarEmailGerson = TRUE;
+            }
+            else {
+                $enviarEmailJessica = TRUE;
+            }
+        }
+
+        if ($enviarEmailJessica) {
             // Enviar e-mail
             $email = "Ricardo Campos <ricardompcampos@gmail.com>";
             $from = "Ricardo Montania <ricardo.montania@gmail.com>";
@@ -441,11 +453,53 @@ class ViewController extends Controller {
             $mensagem .= '<ul>';
 
             foreach ($data as $item) {
+                if ($item->isRH) continue;
                 $mensagem .= '<li><a target="_blank" href="' . $item->urlVaga . '">' . $item->nomeVaga . '</a> - Empresa: '. $item->nomeEmpresa .', Tipo da vaga: '. $item->tipoVaga .', Descrição: '. $item->miniTextoVaga .', Publicado em: '. $item->dataPublicacao .'</li>';
             }
             $mensagem .= '</ul></p>';
 
             $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Beijinhos no coração e boa sorte!<br></p>';
+
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Atenciosamente,<br></p>';
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 12px; margin-bottom: 10px;">';
+            $mensagem .= '<span style="font-weight: bold; color: rgb(33, 33, 33); display: inline;" class="txt signature_companyname-target sig-hide">Bot Caça Vagas do Ricardo!</span>';
+            $mensagem .= '<span class="company-sep break" style="display: inline;"></span>';
+            $mensagem .= '</p></body></html>';
+
+            mail($email, $assunto, $mensagem, $cabecalhos);
+        }
+
+        if ($enviarEmailGerson) {
+            // Enviar e-mail
+            $email = "Ricardo Campos <ricardompcampos@gmail.com>";
+            $from = "Ricardo Montania <ricardo.montania@gmail.com>";
+            $comCopiaPara = "Geiso <gjrmacedo@gmail.com>";
+            $assunto = "Novas vagas de RH!";
+
+            $cabecalhos =
+                "MIME-Version: 1.0" . "\r\n".
+                "Content-type: text/html; charset=utf-8" . "\r\n".
+                "To: _DESTINATARIO_ " . "\r\n".
+                "From: {$from}" . "\r\n".
+                "Cc: {$comCopiaPara}" . "\r\n".
+                "Reply-To: {$from}" . "\r\n".
+                "X-Mailer: PHP/".phpversion() . "\r\n";
+
+            $cabecalhos = str_replace("_DESTINATARIO_", $email, $cabecalhos);
+
+            $mensagem = '<html><body><p style="font-family: Helvetica, Arial, sans-serif; font-size: 18px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Fala Geiso!</p>'.
+                '<br><p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Encontrei novas vagas de trabalho que podem servir!</p>'.
+                '<br>';
+
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">';
+            $mensagem .= 'São elas:';
+            $mensagem .= '<ul>';
+
+            foreach ($data as $item) {
+                if (!$item->isRH) continue;
+                $mensagem .= '<li><a target="_blank" href="' . $item->urlVaga . '">' . $item->nomeVaga . '</a> - Empresa: '. $item->nomeEmpresa .', Tipo da vaga: '. $item->tipoVaga .', Descrição: '. $item->miniTextoVaga .', Publicado em: '. $item->dataPublicacao .'</li>';
+            }
+            $mensagem .= '</ul></p>';
 
             $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Atenciosamente,<br></p>';
             $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 12px; margin-bottom: 10px;">';
