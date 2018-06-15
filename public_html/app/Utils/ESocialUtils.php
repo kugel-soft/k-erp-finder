@@ -76,8 +76,59 @@ class ESocialUtils {
                 array_push($data, $news);
             }
         }
-        else {
-            return "NOT OK";
+
+        // Adição dos agendamentos
+        $urlPrincipal = 'http://portal.esocial.gov.br/agenda/agenda-1';
+        $client = new Client();
+        $response = $client->request('GET', $urlPrincipal, ['verify' => false]);
+        $html = (string) $response->getBody();
+        $domCrawler = (new Dom)->load($html);
+
+        $divContentCore = $domCrawler->find('#content-core')[0];
+        if ($divContentCore) {
+            $h2List = $divContentCore->find('.headline');
+            foreach ($h2List as $agenda) {
+                // declaração de variaveis
+                $title_content = "";
+                $url_content = "";
+                $url_text_content = "";
+                $description_content = "";
+                $publicado_em_content = "";
+                $publicado_as_content = "";
+
+                $a = $agenda->find('a');
+                if (count($a) > 0) {
+                    // Title
+                    $title_content = $a[0]->text;
+
+                    // URL
+                    $url_content = $a[0]->href;
+                    $url_text_content = $title_content;
+
+                    // Descrição
+                    $description_content = 'Sem descrição';
+
+                    // publicado em
+                    $publicado_em_content = '-';
+                    if (strlen($title_content) > 10) {
+                        $publicado_em_content = substr($title_content, 0, 10);
+                    }
+
+                    // Publicado as
+                    $publicado_as_content = '-';
+                }
+
+                $news = [
+                    'title'       => $title_content,
+                    'url'         => $url_content,
+                    'url_text'    => $url_text_content,
+                    'description' => $description_content,
+                    'when'        => $publicado_em_content,
+                    'at'          => $publicado_as_content,
+                ];
+
+                array_push($data, $news);
+            }
         }
 
         return $data;
