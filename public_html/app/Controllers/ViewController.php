@@ -323,6 +323,12 @@ class ViewController extends Controller {
     public function viewConsultaJessicaSE($request, $response) {
         $dataSite = VagasUtils::getVagas();
 
+        /*
+        if (TRUE) {
+            return $response->withJson($dataSite);
+        }
+        */
+
         $data = [];
         $mostrar = $request->getAttribute('mostrar');
 
@@ -393,6 +399,7 @@ class ViewController extends Controller {
                         'dataPublicacao' => $item['dataPublicacao'],
                         'urlVaga'        => $item['urlVaga'],
                         'visto'          => 'S',
+                        'origem'         => $item['origem'],
                     ]);
                     $v->isRH = $item['isRH'];
                     array_push($data, $v);
@@ -454,8 +461,19 @@ class ViewController extends Controller {
 
             foreach ($data as $item) {
                 if ($item->isRH) continue;
-                $mensagem .= '<li><a target="_blank" href="' . $item->urlVaga . '">' . $item->nomeVaga . '</a> - Empresa: '. $item->nomeEmpresa .', Tipo da vaga: '. $item->tipoVaga .', Descrição: '. $item->miniTextoVaga .', Publicado em: '. $item->dataPublicacao .'</li>';
+                $mensagem .= '<li><a target="_blank" href="' . $item->urlVaga . '">' . $item->nomeVaga . '</a> ('.$item->origem.') - Empresa: '. $item->nomeEmpresa .', Tipo da vaga: '. $item->tipoVaga .', Descrição: '. $item->miniTextoVaga .', Publicado em: '. $item->dataPublicacao .'</li>';
             }
+            $mensagem .= '</ul></p>';
+
+            // Lista dos sites buscados
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">';
+            $mensagem .= 'Sites consultados:';
+            $mensagem .= '<li><a target="_blank" href="https://www.joinvillevagas.com.br/">Joinville Vagas</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.sine.com.br/vagas-empregos-em-joinville-sc">SINE Joinville</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.indeed.com.br/empregos?q=&l=Joinville%2C+SC">Indeed</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.infojobs.com.br/empregos-em-joinville,-sc.aspx">Infojobs</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.rhbrasil.com.br/site/vagas_unidade.php?cd_empresa=1&vagas=170&titulo=VAGAS+EM:+JOINVILLE">RH Brasil</a> (Em desenvolvimento)</li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.manager.com.br/empregos-cidade-joinville-sc-123-4">Manager</a> (Em desenvolvimento)</li>';
             $mensagem .= '</ul></p>';
 
             $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Beijinhos no coração e boa sorte!<br></p>';
@@ -497,8 +515,19 @@ class ViewController extends Controller {
 
             foreach ($data as $item) {
                 if (!$item->isRH) continue;
-                $mensagem .= '<li><a target="_blank" href="' . $item->urlVaga . '">' . $item->nomeVaga . '</a> - Empresa: '. $item->nomeEmpresa .', Tipo da vaga: '. $item->tipoVaga .', Descrição: '. $item->miniTextoVaga .', Publicado em: '. $item->dataPublicacao .'</li>';
+                $mensagem .= '<li><a target="_blank" href="' . $item->urlVaga . '">' . $item->nomeVaga . '</a> ('.$item->origem.') - Empresa: '. $item->nomeEmpresa .', Tipo da vaga: '. $item->tipoVaga .', Descrição: '. $item->miniTextoVaga .', Publicado em: '. $item->dataPublicacao .'</li>';
             }
+            $mensagem .= '</ul></p>';
+
+            // Lista dos sites buscados
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">';
+            $mensagem .= 'Sites consultados:';
+            $mensagem .= '<li><a target="_blank" href="https://www.joinvillevagas.com.br/">Joinville Vagas</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.sine.com.br/vagas-empregos-em-joinville-sc">SINE Joinville</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.indeed.com.br/empregos?q=&l=Joinville%2C+SC"Indeed</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.infojobs.com.br/empregos-em-joinville,-sc.aspx"Infojobs</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.rhbrasil.com.br/site/vagas_unidade.php?cd_empresa=1&vagas=170&titulo=VAGAS+EM:+JOINVILLE">RH Brasil</a></li>';
+            $mensagem .= '<li><a target="_blank" href="https://www.manager.com.br/empregos-cidade-joinville-sc-123-4">Manager</a></li>';
             $mensagem .= '</ul></p>';
 
             $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Atenciosamente,<br></p>';
