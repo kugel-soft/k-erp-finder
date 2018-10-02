@@ -16,7 +16,8 @@ class VagasUtils {
             'recepcionista',
             'atendente',
             'administrativo',
-            'assistente'
+            'assistente',
+            'segurança do trabalho'
         );
 
         // Joinville Vagas - https://www.joinvillevagas.com.br/
