@@ -13,11 +13,12 @@ class VagasUtils {
 
         // Vagas a pesquisar
         $vagasInteresse = array(
-            'recepcionista',
+            'assistente pessoal',
             'atendente',
             'administrativo',
             'assistente',
-            'segurança do trabalho'
+            'recep',
+            'ingl'
         );
 
         // Joinville Vagas - https://www.joinvillevagas.com.br/

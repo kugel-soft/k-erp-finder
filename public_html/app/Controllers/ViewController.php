@@ -132,8 +132,6 @@ class ViewController extends Controller {
             }
         }
 
-
-
         // Informe
         foreach ($dataSite['informeList'] as $item) {
             $result = Informe::where('texto', $item)->first();
@@ -280,6 +278,8 @@ class ViewController extends Controller {
 
             mail($email, $assunto, $mensagem, $cabecalhos);
         }
+
+        $dataSite = SefazUtils::getConsultaMDFe();
 
         return "OK";
     }
@@ -437,8 +437,8 @@ class ViewController extends Controller {
             // Enviar e-mail
             $email = "Ricardo Campos <ricardompcampos@gmail.com>";
             $from = "Ricardo Montania <ricardo.montania@gmail.com>";
-            $comCopiaPara = "Jéssica Schmoller <jeschmoller@gmail.com>";
-            $assunto = "Novas vagas anunciadas!";
+            $comCopiaPara = "Tifani Schmoller <tidasiclo@gmail.com>";
+            $assunto = "Novos anúncios de vagas de emprego!";
 
             $cabecalhos =
                 "MIME-Version: 1.0" . "\r\n".
@@ -451,7 +451,7 @@ class ViewController extends Controller {
 
             $cabecalhos = str_replace("_DESTINATARIO_", $email, $cabecalhos);
 
-            $mensagem = '<html><body><p style="font-family: Helvetica, Arial, sans-serif; font-size: 18px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Olá lindinha! =D</p>'.
+            $mensagem = '<html><body><p style="font-family: Helvetica, Arial, sans-serif; font-size: 18px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Olá Tifani Schmoller!!</p>'.
                 '<br><p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Encontrei novas vagas de trabalho que podem ser do seu interesse!</p>'.
                 '<br>';
 
@@ -476,7 +476,7 @@ class ViewController extends Controller {
             $mensagem .= '<li><a target="_blank" href="https://www.manager.com.br/empregos-cidade-joinville-sc-123-4">Manager</a> (Em desenvolvimento)</li>';
             $mensagem .= '</ul></p>';
 
-            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Beijinhos no coração e boa sorte!<br></p>';
+            $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Boa sorte!<br></p>';
 
             $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Atenciosamente,<br></p>';
             $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 12px; margin-bottom: 10px;">';
@@ -487,7 +487,7 @@ class ViewController extends Controller {
             mail($email, $assunto, $mensagem, $cabecalhos);
         }
 
-        if ($enviarEmailGerson) {
+        if ($enviarEmailGerson && FALSE) {
             // Enviar e-mail
             $email = "Ricardo Campos <ricardompcampos@gmail.com>";
             $from = "Ricardo Montania <ricardo.montania@gmail.com>";

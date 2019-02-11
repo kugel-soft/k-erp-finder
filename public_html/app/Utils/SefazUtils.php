@@ -319,4 +319,70 @@ class SefazUtils {
 
         return $data;
     }
+
+    public static function getConsultaMDFe() {
+        $data = [
+            'avisos' => [],
+            'noticias' => []
+        ];
+
+        $url = 'https://mdfe-portal.sefaz.rs.gov.br';
+
+        $client = new Client();
+        $response = $client->request('GET', $urlPrincipal, ['verify' => false]);
+        $html = (string) $response->getBody();
+        $domCrawler = (new Dom)->load($html);
+
+        /*
+        * Avisos
+        *
+        *<!-- Avisos -->
+        *<div class="colNoticias colAvisos borda_aviso">
+        *    <h2>Avisos</h2><br/>
+        *    <p style="text-align: justify;">
+        *        <span class="dataNoticia"> 13/09/2018 </span>
+        *        <a href="/Site/Noticias"> Ativação das regras de verificação do RNTRC </a>
+        *    </p>
+        *    <p style="text-align: justify;">
+        *        <span class="dataNoticia"> 06/09/2018 </span>
+        *        <a href="/Site/Noticias"> Aviso: Emissor Gratuito </a>
+        *    </p>
+        *    <p style="text-align: justify;">
+        *        <span class="dataNoticia"> 18/05/2018 </span>
+        *        <a href="/Site/Noticias"> Comunicado importante: Encerramento do Fisco implantado </a>                    
+        *    </p>
+        *    <p style="text-align: justify;">
+        *        <span class="dataNoticia"> 08/02/2018 </span>
+        *        <a href="/Site/Noticias"> Manutenção Preventiva da SVRS </a>
+        *    </p>
+        *    <p style="text-align: justify;">
+        *        <span class="dataNoticia"> 24/10/2017 </span>
+        *        <a href="/Site/Noticias"> ATENÇÃO: Atualização dos certificados digitais dos ambientes do RS e SVRS de Documentos Fiscais Eletrônicos (NF-e, NFC-e, CT-e, MDF-e, BP-e): </a>
+        *    </p>
+        *</div>
+        */
+        $divAvisos = $domCrawler->find('.colAvisos')[0];
+        if ($divAvisos) {
+            $pList = $divAvisos->find('p');
+            foreach ($pList as $p) {
+                $a = $p->find('a')[0];
+                $span = $p->find('span')[0];
+                if ($a && $span) {
+                    $titulo = trim($a->text);
+                    $data = trim($span->text);
+                    $urlAviso = 'https://mdfe-portal.sefaz.rs.gov.br/Site/Noticias';
+
+                    $item = array(
+                        'titulo' => $titulo,
+                        'data' => $data,
+                        'urlAviso' => $urlAviso
+                    );
+
+                    array_push($data['avisos'], $item);
+                }
+            }
+        }
+
+        return $data;
+    }
 }
