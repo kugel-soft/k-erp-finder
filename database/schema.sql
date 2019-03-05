@@ -1,5 +1,11 @@
 create database kugel;
 
+create user 'kugelbot'@'localhost' IDENTIFIED BY 'kugel123';
+
+GRANT ALL PRIVILEGES ON * . * TO 'kugelbot'@'localhost';
+
+FLUSH PRIVILEGES;
+
 create table categorias (
     id int auto_increment,
     nome varchar(50) not null,
