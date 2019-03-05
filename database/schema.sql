@@ -144,3 +144,6 @@ create table header_mail (
 	updated_at timestamp,
     primary key(ultimo)
 );
+
+-- dump database
+--C:\Program Files\MySQL\MySQL Server 5.6\bin>mysqldump.exe -e -uroot -padmin -hlocalhost kugel > c:\users\ricardo\desktop\kugel_05032019.sql
