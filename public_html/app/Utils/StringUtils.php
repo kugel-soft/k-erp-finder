@@ -25,4 +25,10 @@ class StringUtils {
         $position = strpos($haystack, $needle);
         return $position !== FALSE;
     }
+
+    public static function getText($content) {
+        return mb_convert_encoding($content, 'UTF-8',
+            mb_detect_encoding($content, 'UTF-8, ISO-8859-1', true)
+        );
+    }
 }

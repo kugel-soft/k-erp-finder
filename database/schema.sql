@@ -137,3 +137,10 @@ create table vagas (
 	updated_at timestamp,
 	primary key(id)
 );
+
+create table header_mail (
+    ultimo int not null,
+    created_at timestamp,
+	updated_at timestamp,
+    primary key(ultimo)
+);

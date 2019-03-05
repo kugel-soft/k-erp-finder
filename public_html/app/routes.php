@@ -47,3 +47,5 @@ $app->get ('/liveselect/{termo}', LiveController::class . ':getLiveSelect');
 
 // Apontamentos
 $app->get ('/Apontamentos[/{codFun}]', ApontamentosController::class . ':viewApontamentos')->setName('apontamentos');
+
+$app->get('/Teste-email', ViewController::class . ':viewTest');

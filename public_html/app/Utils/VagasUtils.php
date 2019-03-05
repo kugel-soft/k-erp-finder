@@ -4,6 +4,7 @@ namespace Kugel\Utils;
 
 use PHPHtmlParser\Dom;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7;
 
 class VagasUtils {
     public static function getVagas() {
@@ -25,7 +26,12 @@ class VagasUtils {
         $urlJoinvilleVagas = 'https://www.joinvillevagas.com.br/';
         $client = new Client();
         $response = $client->request('GET', $urlJoinvilleVagas, ['verify' => false]);
-        $html = (string) $response->getBody();
+        $type = $response->getHeader('content-type');
+        $parsed = Psr7\parse_header($type);
+        $original_body = (string)$response->getBody();
+        $utf8_body = mb_convert_encoding($original_body, 'UTF-8', $parsed[0]['charset'] ?: 'UTF-8');
+
+        $html = $utf8_body; //(string) $response->getBody();
         $domCrawler = (new Dom)->load($html);
         $adicionado = FALSE;
 
@@ -48,7 +54,7 @@ class VagasUtils {
                 if ($h3JobListingTitle) {
                     $a = $h3JobListingTitle->find('a');
                     if (count($a) > 0) {
-                        $nomeVaga = ucfirst(strtolower($a[0]->text));
+                        $nomeVaga = StringUtils::getText(ucfirst(strtolower($a[0]->text)));
                         $urlVaga = $a[0]->href;
                     }
                 }
@@ -56,7 +62,7 @@ class VagasUtils {
                 // Nome da empresa
                 $divJobListingCompany = $li->find('.job_listing-company')[0];
                 if ($divJobListingCompany) {
-                    $nomeEmpresa = trim($divJobListingCompany->text);
+                    $nomeEmpresa = StringUtils::getText(trim($divJobListingCompany->text));
                 }
 
                 // Tipo da vaga
@@ -69,7 +75,7 @@ class VagasUtils {
                 // Descrição - Mini texto da vaga
                 $divDescription = $li->find('.ti')[1];
                 if ($divDescription) {
-                    $miniTextoVaga = trim($divDescription->text);
+                    $miniTextoVaga = StringUtils::getText(trim($divDescription->text));
                 }
 
                 // Data da publicação
@@ -82,11 +88,11 @@ class VagasUtils {
                 }
 
                 $vaga = [
-                    'nomeVaga' => mb_convert_encoding($nomeVaga, "UTF-8"),
+                    'nomeVaga' => $nomeVaga,
                     'urlVaga' => $urlVaga,
-                    'nomeEmpresa' => mb_convert_encoding($nomeEmpresa, "UTF-8"),
+                    'nomeEmpresa' => $nomeEmpresa,
                     'tipoVaga' => $tipoVaga,
-                    'miniTextoVaga' => mb_convert_encoding($miniTextoVaga, "UTF-8"),
+                    'miniTextoVaga' => $miniTextoVaga,
                     'dataPublicacao' => $dataPublicacao,
                     'isRH' => FALSE,
                     'origem' => 'Joinville Vagas',
@@ -135,7 +141,12 @@ class VagasUtils {
         $urlSine = 'https://www.sine.com.br/vagas-empregos-em-joinville-sc';
         $client = new Client();
         $response = $client->request('GET', $urlSine, ['verify' => false]);
-        $html = (string) $response->getBody();
+        $type = $response->getHeader('content-type');
+        $parsed = Psr7\parse_header($type);
+        $original_body = (string)$response->getBody();
+        $utf8_body = mb_convert_encoding($original_body, 'UTF-8', $parsed[0]['charset'] ?: 'UTF-8');
+
+        $html = $utf8_body; //(string) $response->getBody();
         $domCrawler = (new Dom)->load($html);
         $adicionado = FALSE;
 
@@ -157,7 +168,7 @@ class VagasUtils {
                 $a = $job->find('a')[0];
                 if ($a) {
                     $urlVaga = 'https://www.sine.com.br' . $a->href;
-                    $nomeVaga = trim($a->title);
+                    $nomeVaga = StringUtils::getText(trim($a->title));
                 }
 
                 // Valor do salário
@@ -184,14 +195,16 @@ class VagasUtils {
                     }
                     $tmp = trim(preg_replace("/\r\n|\r|\n/", '', $p2->text));
                     $miniTextoVaga .= $tmp;
+
+                    StringUtils::getText($miniTextoVaga);
                 }
 
                 $vaga = [
-                    'nomeVaga' => mb_convert_encoding($nomeVaga, "UTF-8"),
+                    'nomeVaga' => $nomeVaga,
                     'urlVaga' => $urlVaga,
-                    'nomeEmpresa' => mb_convert_encoding($nomeEmpresa, "UTF-8"),
+                    'nomeEmpresa' => $nomeEmpresa,
                     'tipoVaga' => $tipoVaga,
-                    'miniTextoVaga' => mb_convert_encoding($miniTextoVaga, "UTF-8"),
+                    'miniTextoVaga' => $miniTextoVaga,
                     'dataPublicacao' => $dataPublicacao,
                     'isRH' => FALSE,
                     'origem' => 'SINE Joinville',
@@ -241,7 +254,11 @@ class VagasUtils {
         $urlB = 'https://www.indeed.com.br';
         $client = new Client();
         $response = $client->request('GET', $urlIndeed, ['verify' => false]);
-        $html = (string) $response->getBody();
+        $type = $response->getHeader('content-type');
+        $parsed = Psr7\parse_header($type);
+        $original_body = (string)$response->getBody();
+        $utf8_body = mb_convert_encoding($original_body, 'UTF-8', $parsed[0]['charset'] ?: 'UTF-8');
+        $html = $utf8_body; //(string) $response->getBody();
         $domCrawler = (new Dom)->load($html);
         $adicionado = FALSE;
 
@@ -264,7 +281,7 @@ class VagasUtils {
             if ($h2JobTitle) {
                 $aEnd = $h2JobTitle->find('a')[0];
                 if ($aEnd) {
-                    $nomeVaga = ucfirst(strtolower(trim($aEnd->text)));
+                    $nomeVaga = StringUtils::getText(ucfirst(strtolower(trim($aEnd->text))));
 
                     // URL da vaga
                     $urlVaga = $urlB . $aEnd->href;
@@ -277,7 +294,7 @@ class VagasUtils {
             } else {
                 $jobtitle = $job->find('.jobtitle')[0];
                 if ($jobtitle) {
-                    $nomeVaga = ucfirst(strtolower(trim($jobtitle->text)));
+                    $nomeVaga = StringUtils::getText(ucfirst(strtolower(trim($jobtitle->text))));
 
                     // URL da vaga
                     $urlVaga = $urlB . $jobtitle->href;
@@ -294,9 +311,9 @@ class VagasUtils {
             if ($spanCompany) {
                 $aComp = $spanCompany->find('a')[0];
                 if ($aComp) {
-                    $nomeEmpresa = ucfirst(strtolower(trim($aComp->text)));
+                    $nomeEmpresa = StringUtils::getText(ucfirst(strtolower(trim($aComp->text))));
                 } else {
-                    $nomeEmpresa = ucfirst(strtolower(trim($spanCompany->text)));
+                    $nomeEmpresa = StringUtils::getText(ucfirst(strtolower(trim($spanCompany->text))));
                 }
             }
 
@@ -309,17 +326,17 @@ class VagasUtils {
             // Descrição da vaga
             $spanSummary = $job->find('.summary')[0];
             if ($spanSummary) {
-                $miniTextoVaga = trim($spanSummary->text);
+                $miniTextoVaga = StringUtils::getText(trim($spanSummary->text));
             }
 
             // Data da publicação
 
             $vaga = [
-                'nomeVaga' => mb_convert_encoding($nomeVaga, "UTF-8"),
+                'nomeVaga' => $nomeVaga,
                 'urlVaga' => $urlVaga,
-                'nomeEmpresa' => mb_convert_encoding($nomeEmpresa, "UTF-8"),
+                'nomeEmpresa' => $nomeEmpresa,
                 'tipoVaga' => $tipoVaga,
-                'miniTextoVaga' => mb_convert_encoding($miniTextoVaga, "UTF-8"),
+                'miniTextoVaga' => $miniTextoVaga,
                 'dataPublicacao' => $dataPublicacao,
                 'isRH' => FALSE,
                 'origem' => 'Indeed',
@@ -369,7 +386,11 @@ class VagasUtils {
         $urlInfo = 'https://www.infojobs.com.br/empregos-em-joinville,-sc.aspx';
         $client = new Client();
         $response = $client->request('GET', $urlInfo, ['verify' => false]);
-        $html = (string) $response->getBody();
+        $type = $response->getHeader('content-type');
+        $parsed = Psr7\parse_header($type);
+        $original_body = (string)$response->getBody();
+        $utf8_body = mb_convert_encoding($original_body, 'UTF-8', $parsed[0]['charset'] ?: 'UTF-8');
+        $html = $utf8_body; //(string) $response->getBody();
         $domCrawler = (new Dom)->load($html);
         $adicionado = FALSE;
 
@@ -392,20 +413,20 @@ class VagasUtils {
                 if ($aVagaTitle) {
                     $h2 = $aVagaTitle->find('h2')[0];
                     if ($h2) {
-                        $nomeVaga = trim($h2->text);
+                        $nomeVaga = StringUtils::getText(trim($h2->text));
                     }
                 }
             }
 
             $vaga = [
-                'nomeVaga' => mb_convert_encoding($nomeVaga, "UTF-8"),
+                'nomeVaga' => $nomeVaga,
                 'urlVaga' => $urlVaga,
-                'nomeEmpresa' => mb_convert_encoding($nomeEmpresa, "UTF-8"),
+                'nomeEmpresa' => $nomeEmpresa,
                 'tipoVaga' => $tipoVaga,
-                'miniTextoVaga' => mb_convert_encoding($miniTextoVaga, "UTF-8"),
+                'miniTextoVaga' => $miniTextoVaga,
                 'dataPublicacao' => $dataPublicacao,
                 'isRH' => FALSE,
-                'origem' => 'Indeed',
+                'origem' => 'Info Jobs',
             ];
 
             // Filtra as vagas de interesse
