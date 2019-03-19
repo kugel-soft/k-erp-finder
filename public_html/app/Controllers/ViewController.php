@@ -280,7 +280,7 @@ class ViewController extends Controller {
             mail($email, $assunto, $mensagem, $cabecalhos);
         }
 
-        $dataSite = SefazUtils::getConsultaMDFe();
+        //$dataSite = SefazUtils::getConsultaMDFe();
 
         return "OK";
     }
@@ -438,7 +438,7 @@ class ViewController extends Controller {
             // Enviar e-mail
             $email = "Tifani Schmoller <tidasiclo@gmail.com>";
             $from = "Vagas Por E-mail <vagasporemail@gmail.com>";
-            $comCopiaPara = "Ricardo Campos <ricardompcampos@gmail.com>";
+            $comCopiaPara = "Ricardo Campos <ricardompcampos@gmail.com>;Cláudia Campos <claudiadicampos@hotmail.com>";
             $assunto = "Novos anúncios de vagas de emprego!";
 
             $cabecalhos =
@@ -546,13 +546,13 @@ class ViewController extends Controller {
             $mensagem .= '<div class="content">';
             $mensagem .= '<table bgcolor="#999999">';
             $mensagem .= '<tr>';
-            $mensagem .= '<td><img src="http://vagasporemail.tk/images/logo.png"/></td>';
+            $mensagem .= '<td><img src="https://vagas-por-email.000webhostapp.com/images/logo.png"/></td>';
             $mensagem .= '<td align="right"><h6 class="collapse">Novas vagas!</h6></td>';
             $mensagem .= '</tr></table></div></td><td></td></tr></table>';
             $mensagem .= '<table class="body-wrap"><tr><td></td><td class="container" bgcolor="#FFFFFF">';
             $mensagem .= '<div class="content"><table><tr><td>';
             $mensagem .= '<h1>Coleta das ' . date('H') . 'hs</h1>';
-            $mensagem .= '<p><img src="http://vagasporemail.tk/images/'.$imageHeader.'"/></p>';
+            $mensagem .= '<p><img src="https://vagas-por-email.000webhostapp.com/images/'.$imageHeader.'"/></p>';
             $mensagem .= '<p>Estas são as vagas encontradas, recém publicadas!</p>';
             $mensagem .= '</td></tr></table></div>';
 
@@ -566,7 +566,7 @@ class ViewController extends Controller {
                     $logoOrigem = $logos[$item->origem];
                 }
                 
-                $mensagem .= '<img src="http://vagasporemail.tk/images/'.$logoOrigem.'" alt="Vaga encontrada no site '.$item->origem.'"/>';
+                $mensagem .= '<img src="https://vagas-por-email.000webhostapp.com/images/'.$logoOrigem.'" alt="Vaga encontrada no site '.$item->origem.'"/>';
                 $mensagem .= '</td><td>';
                 $mensagem .= '<h4>' . $item->nomeVaga . '</h4>';
 
@@ -708,10 +708,7 @@ class ViewController extends Controller {
                 array_push($data, $c);
             }
             else {
-                if ($mostrar == 'vistos' && $result->visto == 'S') {
-                    array_push($data, $result);
-                }
-                else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                if ($result->visto == 'N') {
                     array_push($data, $result);
                 }
             }

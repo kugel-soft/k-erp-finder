@@ -137,7 +137,8 @@ class VagasUtils {
             }
         }
 
-        // Sine Joinville - https://www.sine.com.br/vagas-empregos-em-joinville-sc
+	// Sine Joinville - https://www.sine.com.br/vagas-empregos-em-joinville-sc
+	/*
         $urlSine = 'https://www.sine.com.br/vagas-empregos-em-joinville-sc';
         $client = new Client();
         $response = $client->request('GET', $urlSine, ['verify' => false]);
@@ -247,7 +248,8 @@ class VagasUtils {
                     }
                 }
             }
-        }
+	}
+	 */
 
         // Indeed - https://www.indeed.com.br/empregos?q=&l=Joinville%2C+SC
         $urlIndeed = 'https://www.indeed.com.br/empregos?q=&l=Joinville%2C+SC';

@@ -329,7 +329,7 @@ class SefazUtils {
         $url = 'https://mdfe-portal.sefaz.rs.gov.br';
 
         $client = new Client();
-        $response = $client->request('GET', $urlPrincipal, ['verify' => false]);
+        $response = $client->request('GET', $url, ['verify' => false]);
         $html = (string) $response->getBody();
         $domCrawler = (new Dom)->load($html);
 
