@@ -297,6 +297,9 @@ class ViewController extends Controller {
         foreach ($dataSite as $item) {
             $result = ESocial::where('url', $item['url'])->first();
             if (!$result) {
+                if (strlen($item['title']) > 100) {
+                    $item['title'] = substr($item['title'], 0, 100);
+                }
                 $c = ESocial::create([
                     'titulo'       => $item['title'],
                     'url'          => $item['url'],
@@ -436,9 +439,9 @@ class ViewController extends Controller {
 
         if ($enviarEmailJessica) {
             // Enviar e-mail
-            $email = "Tifani Schmoller <tidasiclo@gmail.com>";
+            $email = "Cláudia Campos <camposdellagrazia@gmail.com>";
             $from = "Vagas Por E-mail <vagasporemail@gmail.com>";
-            $comCopiaPara = "Ricardo Campos <ricardompcampos@gmail.com>;Cláudia Campos <claudiadicampos@hotmail.com>";
+            $comCopiaPara = "Cláudia Montania <lotusmontania@gmail.com>, Ricardo Campos <ricardompcampos@gmail.com>";
             $assunto = "Novos anúncios de vagas de emprego!";
 
             $cabecalhos =
