@@ -12,6 +12,7 @@ require __DIR__ . '/../vendor/autoload.php';
 */
 require __DIR__ . '/../bootstrap/paginator.php';
 
+$rootPw = strtoupper(substr(PHP_OS, 0, 3)) === "WIN"? "admin" : "kugel";
 /*
 * Instancia um novo Slim app
 */
@@ -23,7 +24,7 @@ $app = new \Slim\App([
             'host' => 'localhost',
             'database' => 'kugel',
             'username' => 'root',
-            'password' => 'admin',
+            'password' => $rootPw,
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix' => '',
