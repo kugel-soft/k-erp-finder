@@ -1,8 +1,8 @@
-# KInfoManager #
-Gestor de informações Kugel
+# K-ERP-Finder #
+Gestor de busca de dados e informações sobre o ERP Kugel
 
 ### Sobre ###
-O KInfoManager foi criado para gerenciar informações do ERP Kugel para que o suporte possa ser mais ágil e mais completo, conforme o uso diário por quem presta suporte.
+Este projeto foi criado para gerenciar informações do ERP Kugel para que o suporte possa ser mais ágil e mais completo, conforme o uso diário por quem presta suporte.
 
 ### Funções ###
 * Live search na página inicial
@@ -16,25 +16,29 @@ Obs: Este projeto está alocado internamente e não está acessível para a rede
 * Necessário ter o php no PATH, ou então usar o caminho completo do php
 * Acessar a public_html, dentro da pasta raiz do projeto
 * Executar na linha de comando:
-$ php -S localhost:8000 -t public/index.php
+
+`php -S localhost:8000 -t public public/index.php`
 
 ### Executar localmente - Ambiente de produção ###
 * Necessário ter instalado além do php, algum servidor apache.
 * Neste exemplo, e no meu caso, uso o Apache Haus para Windows
 * Exemplo de configuração para o Apache Haus, usando virtual server
+
+```
 <VirtualHost *:80>
-    DocumentRoot "${SRVROOT}/htdocs/kinfomanager/public_html"
-    ServerName kinfo-kugel.local
-    ServerAlias *.kinfo-kugel.local
-    <Directory "${SRVROOT}/htdocs/kinfomanager/public_html">
+    DocumentRoot "${SRVROOT}/htdocs/k-erp-finder/public_html"
+    ServerName k-erp-finder.local
+    ServerAlias *.k-erp-finder.local
+    <Directory "${SRVROOT}/htdocs/k-erp-finder/public_html">
         Options All Includes Indexes
     </Directory>
 </VirtualHost>
+```
 
-* Adicionar o endereço kinfo-kugel.local ao arquivo:
+* Adicionar o endereço k-erp-finder.local ao arquivo:
 * - Windows: c:\Windows\System32\drivers\etc\hosts
 * - Linux: /etc/hosts
-* 127.0.0.1           kinfo-kugel.local
+* 127.0.0.1           k-erp-finder.local
 * Obs: Cada computador da rede que queira acessar precisa adicionar ao hosts, porém deve colocar o IP do servidor, e não local.
 
 ### Banco de dados ###
