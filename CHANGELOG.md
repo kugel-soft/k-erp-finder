@@ -1,3 +1,8 @@
+### 13.02.2020a ###
+- Alterado para usar HTML Dom Parser compatível com PHP 3.0;
+- Corrigido ano do footer;
+- Colocado no ar novamente.
+
 ### 23.05.2018a ###
 - Adicionado ideia da logo Koogle
 - Adicionado footer

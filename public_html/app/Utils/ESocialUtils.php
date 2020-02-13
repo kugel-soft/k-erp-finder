@@ -2,18 +2,14 @@
 
 namespace Kugel\Utils;
 
-use PHPHtmlParser\Dom;
-use GuzzleHttp\Client;
+use KubAT\PhpSimple\HtmlDomParser;
 
 class ESocialUtils {
     public static function getNoticias() {
         $data = [];
 
         $urlPrincipal = 'http://portal.esocial.gov.br/noticias/todas-noticias';
-        $client = new Client();
-        $response = $client->request('GET', $urlPrincipal, ['verify' => false]);
-        $html = (string) $response->getBody();
-        $domCrawler = (new Dom)->load($html);
+        $domCrawler = HtmlDomParser::file_get_html( $urlPrincipal );
 
         $divContentCore = $domCrawler->find('#content-core')[0];
         if ($divContentCore) {
@@ -27,40 +23,43 @@ class ESocialUtils {
                 $publicado_em_content = "";
                 $publicado_as_content = "";
 
-                // Title
-                $subtitle = $newsContent->find('.subtitle');
-                if (count($subtitle) > 0) {
-                    $title_content = $subtitle[0]->text;
-                }
-
                 // URL e texto URL
                 $link = $newsContent->find('.tileHeadline');
                 if (count($link) > 0) {
-                    $a = $link->find('a');
+                    $a = $link[0]->find('a');
                     if (count($a) > 0) {
-                        $url_content = $a[0]->href;
-                        $url_text_content = $a[0]->text;
+                        $url_content = trim($a[0]->href);
+                        $url_text_content = trim($a[0]->innertext);
+                        $title_content = '[Notícia] ' . trim($a[0]->innertext);
                     }
                 }
 
                 // descrição
                 $description = $newsContent->find('.description');
                 if (count($description) > 0) {
-                    $description_content = $description[0]->text;
+                    $description_content = $description[0]->innertext;
                 }
 
                 $documentByLine = $newsContent->find('.documentByLine');
                 if (count($documentByLine) > 0) {
-                    $summ = $documentByLine->find('.summary-view-icon');
+                    $summ = $documentByLine[0]->find('.summary-view-icon');
 
                     // publicado_em
                     if (count($summ) > 0) {
-                        $publicado_em_content = trim($summ[0]->text);
+                        $tmpEm = trim($summ[0]->innertext);
+                        if (strpos($tmpEm, '</i>') !== FALSE) {
+                            $tmpEm = trim(substr($tmpEm, strpos($tmpEm, '</i>')+4));
+                        }
+                        $publicado_em_content = $tmpEm;
                     }
 
                     // publicado_as
                     if (count($summ) > 1) {
-                        $publicado_as_content = trim($summ[1]->text);
+                        $tmpAs = trim($summ[1]->innertext);
+                        if (strpos($tmpAs, '</i>') !== FALSE) {
+                            $tmpAs = trim(substr($tmpAs, strpos($tmpAs, '</i>')+4));
+                        }
+                        $publicado_as_content = $tmpAs;
                     }
                 }
 
@@ -79,14 +78,11 @@ class ESocialUtils {
 
         // Adição dos agendamentos
         $urlPrincipal = 'http://portal.esocial.gov.br/agenda/agenda-1';
-        $client = new Client();
-        $response = $client->request('GET', $urlPrincipal, ['verify' => false]);
-        $html = (string) $response->getBody();
-        $domCrawler = (new Dom)->load($html);
+        $domCrawler = HtmlDomParser::file_get_html( $urlPrincipal );
 
         $divContentCore = $domCrawler->find('#content-core')[0];
         if ($divContentCore) {
-            $h2List = $divContentCore->find('.headline');
+            $h2List = $divContentCore->find('.tileItem');
             foreach ($h2List as $agenda) {
                 // declaração de variaveis
                 $title_content = "";
@@ -96,26 +92,41 @@ class ESocialUtils {
                 $publicado_em_content = "";
                 $publicado_as_content = "";
 
-                $a = $agenda->find('a');
-                if (count($a) > 0) {
-                    // Title
-                    $title_content = $a[0]->text;
+                // URL e texto URL
+                $link = $agenda->find('.tileHeadline');
+                if (count($link) > 0) {
+                    $a = $link[0]->find('a');
+                    if (count($a) > 0) {
+                        $url_content = trim($a[0]->href);
+                        $url_text_content = trim($a[0]->innertext);
+                        $title_content = '[Agenda] ' . trim($a[0]->innertext);
+                    }
+                }
 
-                    // URL
-                    $url_content = $a[0]->href;
-                    $url_text_content = $title_content;
+                // descrição
+                // Não tem!
 
-                    // Descrição
-                    $description_content = 'Sem descrição';
+                $documentByLine = $agenda->find('.documentByLine');
+                if (count($documentByLine) > 0) {
+                    $summ = $documentByLine[0]->find('.summary-view-icon');
 
-                    // publicado em
-                    $publicado_em_content = '-';
-                    if (strlen($title_content) > 10) {
-                        $publicado_em_content = substr($title_content, 0, 10);
+                    // publicado_em
+                    if (count($summ) > 0) {
+                        $tmpEm = trim($summ[0]->innertext);
+                        if (strpos($tmpEm, '</i>') !== FALSE) {
+                            $tmpEm = trim(substr($tmpEm, strpos($tmpEm, '</i>')+4));
+                        }
+                        $publicado_em_content = $tmpEm;
                     }
 
-                    // Publicado as
-                    $publicado_as_content = '-';
+                    // publicado_as
+                    if (count($summ) > 1) {
+                        $tmpAs = trim($summ[1]->innertext);
+                        if (strpos($tmpAs, '</i>') !== FALSE) {
+                            $tmpAs = trim(substr($tmpAs, strpos($tmpAs, '</i>')+4));
+                        }
+                        $publicado_as_content = $tmpAs;
+                    }
                 }
 
                 $news = [

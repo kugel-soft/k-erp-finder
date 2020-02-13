@@ -116,9 +116,15 @@ create table documentos_tecnicos (
     primary key(id)
 );
 
+delete from contingencias_ativadas;
+delete from contingencias_agendadas;
+delete from informes;
+delete from documentos_diversos;
+delete from documentos_tecnicos;
+
 create table esocial (
     id int auto_increment,
-    titulo varchar(100) null,
+    titulo varchar(300) null,
     url varchar(300) null,
     texto_url varchar(500) null,
     descricao varchar(1000) null,
@@ -126,7 +132,7 @@ create table esocial (
     publicado_as varchar(8) null,
     visto char(1) not null,
     created_at timestamp,
-    updated_at timestamp,
+    updated_at timestamp null default null,
     primary key(id)
 );
 
