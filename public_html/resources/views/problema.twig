@@ -3,55 +3,49 @@
 {% block content %}
     <div class="row">
         <div class="col-sm-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <p>{{ problema.titulo }} - [{{ problema.categoria.nome }}]</p>
-                                <span>
-                                    <i class="fa fa-tag"></i>
-                                    {% for tag in problema.tags() %}
-                                        <span class="label label-success">{{ tag.nome }}</span>
-                                    {% endfor %}
-                                </span>
-                                {% if problema.tabelas() is not empty %}
-                                    <span>
-                                        <i class="fa fa-database"></i>
-                                        {% for tabela in problema.tabelas() %}
-                                            <span class="label label-success">{{ tabela.nome }}</span>
-                                        {% endfor %}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="panel-body">
-                        <h4>Situação</h4>
-                        <div class="source-code-situacao">
-                            <p>{{ problema.situacao|raw }}</p>
-                        </div>
-
-                        <h4>Possível solução</h4>
-                        <div class="source-code-solucao">
-                            <p>{{ problema.solucao|raw }}</p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h3>{{ problema.titulo }}</h3>
                         </div>
                     </div>
-                    <div class="panel-footer">
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <i class="fa fa-user"></i> {{ problema.criador }}<br>
-                                <i class="fa fa-calendar"></i> Criado em {{ problema.created_at }} atualizado em {{ problema.updated_at }}
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="pull-right">
-                                    <a href="{{ path_for('alterar', {'id': problema.id}) }}" class="btn btn-default">Alterar</a>
-                                    <a href="{{ path_for('excluir', {'id': problema.id}) }}" class="btn btn-danger">Excluir</a>
-                                </div>
-                            </div>
-                        </div>
+
+                </div>
+                <div class="panel-body">
+                    <h4>Situação</h4>
+                    <div class="source-code-situacao">
+                        <p>{{ problema.situacao|raw }}</p>
+                    </div>
+
+                    <h4>Possível solução</h4>
+                    <div class="source-code-solucao">
+                        <p>{{ problema.solucao|raw }}</p>
                     </div>
                 </div>
+                <div class="panel-footer">
+                    <p>Categoria: <b>{{ problema.categoria.nome }}</b></p>
+                    <p>
+                        Tags: 
+                        {% for tag in problema.tags() %}
+                            <span class="label label-success">{{ tag.nome }}</span>
+                        {% endfor %}
+                    </p>
+                    {% if problema.tabelas() is not empty %}
+                    <p>
+                        Tabelas envolvidas:
+                        {% for tabela in problema.tabelas() %}
+                            <span class="label label-default">{{ tabela.nome }}</span>
+                        {% endfor %}
+                    </p>
+                    {% endif %}
+                    <p>Por {{ problema.criador }},
+                    em {{ problema.created_at }}. Atualizado em {{ problema.updated_at }}</p>
+                
+                    <a href="{{ path_for('alterar', {'id': problema.id}) }}" class="">Alterar</a> |
+                    <a href="{{ path_for('excluir', {'id': problema.id}) }}" class="">Excluir</a>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

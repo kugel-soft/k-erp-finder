@@ -446,8 +446,13 @@ class ViewController extends Controller {
                     $mensagem .=
                 '   <p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: rgb(33, 33, 33); margin-bottom: 10px;">'.
                 '     Título: ' . (empty($item->titulo)? 'Não informado' : $item->titulo) . '<br>'.
-                '     URL: <a target="_blank" href="'.$item->url.'">'.$item->texto_url.'</a><br>'.
-                '     Descrição: ' . $item->descricao . '<br>'.
+                '     URL: <a target="_blank" href="'.$item->url.'">'.$item->texto_url.'</a><br>';
+
+                    if (!empty(trim($item->descricao))) {
+                        $mensagem .= '     Descrição: ' . $item->descricao . '<br>';
+                    }
+
+                    $mensagem .=
                 '     Publicado em: ' . $item->publicado_em . ' às ' . $item->publicado_as .
                 '   </p>';
                 }
