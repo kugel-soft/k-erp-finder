@@ -157,5 +157,16 @@ create table header_mail (
     primary key(ultimo)
 );
 
+CREATE TABLE avisos_mdfe (
+    id INT AUTO_INCREMENT,
+    titulo VARCHAR(300) NOT NULL,
+    descricao VARCHAR(5000) NOT NULL,
+    publicado_em VARCHAR(12) NOT NULL,
+    visto CHAR(1) NOT NULL,
+    created_at TIMESTAMP,
+	updated_at TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY(id)
+);
+
 -- dump database
 --C:\Program Files\MySQL\MySQL Server 5.6\bin>mysqldump.exe -e -uroot -padmin -hlocalhost kugel > c:\users\ricardo\desktop\kugel_05032019.sql

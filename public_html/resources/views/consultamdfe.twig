@@ -1,0 +1,72 @@
+{% extends 'templates/wind.twig' %}
+
+{% block content %}
+    <a href="{{ path_for('consulta-mdfe', {'mostrar': 'vistos'}) }}">Mostrar Vistos</a> |
+    <a href="{{ path_for('consulta-mdfe', {'mostrar': 'naovistos'}) }}">Mostrar Não Vistos</a>
+
+    <h3>Bot de extração MDFe</h3>
+    <p><b>Avisos</b></p>
+    <ul class="list-group">
+        {% if data.avisosList is empty %}
+            <li class="list-group-item">Nenhum aviso <b>não visto</b>!</li>
+        {% else %}
+            {% for item in data.avisosList %}
+                <li class="list-group-item">
+                    <h4 class="list-group-item-heading">
+                        {{ item.titulo }}
+                    </h4>
+                    <p class="list-group-item-text">
+                        {{ item.descricao }}
+                        <span class="pull-right">
+                            {% if item.visto == 'N' %}
+                                <a href="{{ path_for('conf-esocial', {'id': item.id}) }}" title="Marcar como visto!">
+                                    <i class="fa fa-check-square"></i>
+                                </a>
+                            {% else %}
+                                <i class="fa fa-check-square"></i>
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p class="list-group-item-text">
+                        <b>Publicado em {{ item.publicado_em }}</b>
+                    </p>
+                </li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    <!--
+    <p><b>Serviço(s) em contingência agendada</b></p>
+    <ul class="list-group">
+        {% if data.contAgendList is empty %}
+            <li class="list-group-item">Nenhum serviço <b>não visto</b> em contingência agendada!</li>
+        {% else %}
+            {% for item in data.contAgendList %}
+                <a href="{{ path_for('conf-cont-agend', {'id': item.id}) }}" title="Marcar como visto!" class="list-group-item">{{ item.texto }}</a>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    <p><b>Informes</b></p>
+    <ul class="list-group">
+        {% if data.informeList is empty %}
+            <li class="list-group-item">Nenhum informes <b>não visto</b>!</li>
+        {% else %}
+            {% for item in data.informeList %}
+                <li class="list-group-item">
+                    <a target="_blank" href="{{ item.endereco }}">{{ item.texto }}</a>
+                    <span class="pull-right">
+                        {% if item.visto == 'N' %}
+                            <a href="{{ path_for('conf-informe', {'id': item.id}) }}" title="Marcar como visto!">
+                                <i class="fa fa-check-square"></i>
+                            </a>
+                        {% else %}
+                            <i class="fa fa-check-square"></i>
+                        {% endif %}
+                    </span>
+                </li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+    -->
+{% endblock %}

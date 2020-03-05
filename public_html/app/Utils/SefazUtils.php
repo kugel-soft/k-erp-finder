@@ -147,64 +147,73 @@ class SefazUtils {
 
     public static function getConsultaMDFe() {
         $data = [
-            'avisos' => [],
-            'noticias' => []
+            'avisosList' => [],
+            'noticias' => [],
+            'documentos' => [],
         ];
+        
 
-        $url = 'https://mdfe-portal.sefaz.rs.gov.br';
+        $urlAvisos = 'https://dfe-portal.svrs.rs.gov.br/Mdfe/Avisos';
+        $urlNoticias = 'https://dfe-portal.svrs.rs.gov.br/Mdfe/Noticias';
+        $urlDocumentos = 'https://dfe-portal.svrs.rs.gov.br/Mdfe/Documentos';
 
-        $client = new Client();
-        $response = $client->request('GET', $url, ['verify' => false]);
-        $html = (string) $response->getBody();
-        $domCrawler = (new Dom)->load($html);
+        $domCrawler = HtmlDomParser::file_get_html( $urlAvisos );
 
-        /*
-        * Avisos
-        *
-        *<!-- Avisos -->
-        *<div class="colNoticias colAvisos borda_aviso">
-        *    <h2>Avisos</h2><br/>
-        *    <p style="text-align: justify;">
-        *        <span class="dataNoticia"> 13/09/2018 </span>
-        *        <a href="/Site/Noticias"> Ativação das regras de verificação do RNTRC </a>
-        *    </p>
-        *    <p style="text-align: justify;">
-        *        <span class="dataNoticia"> 06/09/2018 </span>
-        *        <a href="/Site/Noticias"> Aviso: Emissor Gratuito </a>
-        *    </p>
-        *    <p style="text-align: justify;">
-        *        <span class="dataNoticia"> 18/05/2018 </span>
-        *        <a href="/Site/Noticias"> Comunicado importante: Encerramento do Fisco implantado </a>                    
-        *    </p>
-        *    <p style="text-align: justify;">
-        *        <span class="dataNoticia"> 08/02/2018 </span>
-        *        <a href="/Site/Noticias"> Manutenção Preventiva da SVRS </a>
-        *    </p>
-        *    <p style="text-align: justify;">
-        *        <span class="dataNoticia"> 24/10/2017 </span>
-        *        <a href="/Site/Noticias"> ATENÇÃO: Atualização dos certificados digitais dos ambientes do RS e SVRS de Documentos Fiscais Eletrônicos (NF-e, NFC-e, CT-e, MDF-e, BP-e): </a>
-        *    </p>
-        *</div>
-        */
-        $divAvisos = $domCrawler->find('.colAvisos')[0];
-        if ($divAvisos) {
-            $pList = $divAvisos->find('p');
-            foreach ($pList as $p) {
-                $a = $p->find('a')[0];
-                $span = $p->find('span')[0];
-                if ($a && $span) {
-                    $titulo = trim($a->innertext);
-                    $data = trim($span->innertext);
-                    $urlAviso = 'https://mdfe-portal.sefaz.rs.gov.br/Site/Noticias';
+        $sectionAvisos = $domCrawler->find('#pagedlistItens')[0];
+        if ($sectionAvisos) {
+            $articleList = $sectionAvisos->find('article');
+            foreach ($articleList as $article) {
+                $objeto = array(
+                    'titulo' => '',
+                    'descricao' => '',
+                    'data' => '',
+                );
 
-                    $item = array(
-                        'titulo' => $titulo,
-                        'data' => $data,
-                        'urlAviso' => $urlAviso
-                    );
-
-                    array_push($data['avisos'], $item);
+                // Título
+                $h2Titulo = $article->find('.conteudo-lista__item__titulo')[0];
+                if ($h2Titulo) {
+                    $a = $h2Titulo->find('a')[0];
+                    if ($a) {
+                        $objeto['titulo'] = html_entity_decode($a->innertext);
+                    }
                 }
+
+                // Descrição
+                $pDescricaoList = $article->find('.MsoNormal');
+                foreach ($pDescricaoList as $pNormal) {
+                    $spanSubList = $pNormal->find('span');
+                    if (count($spanSubList) > 0) {
+                        foreach ($spanSubList as $spanSub) {
+                            $spanIn = $spanSub->find('span')[0];
+                            if ($spanIn) {
+                                $objeto['descricao'] .= $spanIn->innertext;
+                            } else {
+                                $objeto['descricao'] .= $spanSub->innertext;
+                            }
+                        }
+                    } else {
+                        $objeto['descricao'] .= $pNormal->innertext;
+                    }
+                }
+
+                if (empty($objeto['descricao'])) {
+                    $spanDescricao = $article->find('span')[0];
+                    if ($spanDescricao) {
+                        $objeto['descricao'] = $spanDescricao->innertext;
+                    }
+                }
+
+                $objeto['descricao'] = str_replace('<o:p>', '', $objeto['descricao']);
+                $objeto['descricao'] = str_replace('</o:p>', '', $objeto['descricao']);
+                $objeto['descricao'] = str_replace('&nbsp;', ' ', $objeto['descricao']);
+
+                // Data
+                $dataEl = $article->find('.conteudo-lista__item__datahora')[0];
+                if ($dataEl) {
+                    $objeto['data'] = trim($dataEl->innertext);
+                }
+
+                array_push($data['avisosList'], $objeto);
             }
         }
 

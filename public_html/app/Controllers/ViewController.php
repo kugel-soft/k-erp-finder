@@ -2,6 +2,7 @@
 
 namespace Kugel\Controllers;
 
+use Kugel\Models\AvisoMDFe;
 use Kugel\Models\NFe;
 use Kugel\Models\Problema;
 
@@ -591,5 +592,80 @@ class ViewController extends Controller {
         }
 
         return $this->view->render($response, 'consultanfe.twig', compact('data'));
+    }
+
+    public function viewConsultaMDFeSE($request, $response) {
+        $dataSite = SefazUtils::getConsultaMDFe();
+        $mostrar = $request->getAttribute('mostrar');
+
+        if ($mostrar == '') {
+            $mostrar = 'naovistos';
+        }
+
+        $data = [
+            'avisosList' => [],
+            'noticiasList' => [],
+            'documentosList' => [],
+        ];
+
+        // AvisoMDFe
+        foreach ($dataSite['avisosList'] as $item) {
+            $result = AvisoMDFe::where('titulo', $item['titulo'])->first();
+            if (!$result) {
+                $c = AvisoMDFe::create([
+                    'titulo' => $item['titulo'],
+                    'descricao' => $item['descricao'],
+                    'publicado_em' => $item['data'],
+                    'visto' => 'N',
+                ]);
+                array_push($data['avisosList'], $c);
+            } else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['avisosList'], $result);
+                } else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['avisosList'], $result);
+                }
+            }
+        }
+
+        // NoticiaMDFe
+        /*
+        foreach ($dataSite['noticiasList'] as $item) {
+            $result = NoticiaMDFe::where('texto', $item)->first();
+            if (!$result) {
+                $c = NoticiaMDFe::create([
+                    'texto' => $item,
+                    'visto' => 'N',
+                ]);
+                array_push($data['noticiasList'], $c);
+            } else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['noticiasList'], $result);
+                } else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['noticiasList'], $result);
+                }
+            }
+        }
+
+        // DocumentoMDFe
+        foreach ($dataSite['documentosList'] as $item) {
+            $result = DocumentoMDFe::where('texto', $item['texto'])->first();
+            if (!$result) {
+                $c = DocumentoMDFe::create([
+                    'texto' => $item['texto'],
+                    'visto' => 'N',
+                    'endereco' => $item['endereco'],
+                ]);
+                array_push($data['documentosList'], $c);
+            } else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['documentosList'], $result);
+                } else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['documentosList'], $result);
+                }
+            }
+        }*/
+
+        return $this->view->render($response, 'consultamdfe.twig', compact('data'));
     }
 }

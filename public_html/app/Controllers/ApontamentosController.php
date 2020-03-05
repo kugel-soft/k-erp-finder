@@ -30,6 +30,7 @@ class ApontamentosController extends Controller {
         
         $url = $this->router->pathFor('apontamentos');
         $funcList = ApontamentoUtil::getFuncionarioList();
+        // die(var_dump($funcList));
             
         return $this->view->render(
             $response,
