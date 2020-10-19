@@ -721,7 +721,7 @@ class ViewController extends Controller {
                     $mensagem .= '<ul>';
     
                     foreach ($data['avisosList'] as $item) {
-                        $mensagem .= '<li>' . $item->descricao . '</li>';
+                        $mensagem .= '<li>' . $item->titulo . '</li>';
                     }
                     $mensagem .= '</ul></p>';
                 }
