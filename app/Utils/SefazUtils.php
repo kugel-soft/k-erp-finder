@@ -37,7 +37,7 @@ class SefazUtils {
 
                         $periodo = '';
                         foreach ($row->find('span') as $span) {
-                            $periodo .= utf8_encode($span->innertext);
+                            $periodo .= $span->innertext;
                         }
                         array_push($data['contAtivList'], $siglaUf . ' - ' . $periodo);
                     }
@@ -59,7 +59,7 @@ class SefazUtils {
 
                         $periodo = '';
                         foreach ($row->find('span') as $span) {
-                            $periodo .= utf8_encode($span->innertext);
+                            $periodo .= $span->innertext;
                         }
                         array_push($data['contAgendList'], $siglaUf . ' - ' . $periodo);
                     }
@@ -77,7 +77,7 @@ class SefazUtils {
                     foreach ($trList as $row) {
                         $dataInforme = $row->find('a')[0]->innertext;
                         $urlInforme = $row->find('a')[0]->getAttribute('href');
-                        $tituloInforme = utf8_encode($row->find('a')[1]->innertext);
+                        $tituloInforme = $row->find('a')[1]->innertext;
 
                         $item = array(
                             'texto' => 'Em ' . $dataInforme . ',  ' . $tituloInforme,
@@ -102,7 +102,7 @@ class SefazUtils {
             $indentacaoConteudo = $conteudoDinamico->find('.indentacaoConteudo')[0];
             if ($indentacaoConteudo) {
                 foreach ($indentacaoConteudo->find('p') as $p) {
-                    $text = utf8_encode($p->find('span')[0]->innertext);
+                    $text = $p->find('span')[0]->innertext;
                     array_push($data['docDiversosList'], $text);
                 }
             }
@@ -124,10 +124,10 @@ class SefazUtils {
                     $divIdentNormal = $indentacaoConteudo->find('.indentacaoNormal')[0];
                     if ($divIdentNormal) {
                         foreach ($divIdentNormal->find('p') as $p) {
-                            $txt = utf8_encode($p->find('span')[0]->innertext);
+                            $txt = $p->find('span')[0]->innertext;
 
                             $contTmp = str_replace('<br />', '', $p->innertext);
-                            $contTmp = utf8_encode($contTmp);
+                            $contTmp = $contTmp;
                             while ( strpos($contTmp, '>') !== FALSE ) {
                                 $contTmp = trim(substr($contTmp, strpos($contTmp, '>')+1));
                                 //echo 'while: [' . $contTmp . ']<br><br>';
