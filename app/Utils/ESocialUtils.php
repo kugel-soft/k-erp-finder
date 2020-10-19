@@ -8,7 +8,7 @@ class ESocialUtils {
     public static function getNoticias() {
         $data = [];
 
-        $urlPrincipal = 'http://portal.esocial.gov.br/noticias/todas-noticias';
+        $urlPrincipal = 'https://www.gov.br/esocial/pt-br/noticias';
         $domCrawler = HtmlDomParser::file_get_html( $urlPrincipal );
 
         $divContentCore = $domCrawler->find('#content-core')[0];
@@ -77,7 +77,7 @@ class ESocialUtils {
         }
 
         // Adição dos agendamentos
-        $urlPrincipal = 'http://portal.esocial.gov.br/agenda/agenda-1';
+        $urlPrincipal = 'https://www.gov.br/esocial/pt-br/centrais-de-conteudo/agenda/agenda-1';
         $domCrawler = HtmlDomParser::file_get_html( $urlPrincipal );
 
         $divContentCore = $domCrawler->find('#content-core')[0];

@@ -1,3 +1,5 @@
 # Classes PHP obtidas via composer
-public_html/vendor/
-public_html/app/Utils/SecretUtils.php
+vendor/
+
+# Secrets
+app/Utils/SecretUtils.php

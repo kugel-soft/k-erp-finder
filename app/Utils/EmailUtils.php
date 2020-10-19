@@ -9,28 +9,43 @@ class EmailUtils {
 
     public static function enviarEmail($destinatarios, $assunto, $mensagem) {
         $mailer = new PHPMailer();
-        $mailer->IsSMTP();
-        $mailer->Port = 465;
-        $mailer->Host = 'smtp.gmail.com';
-        $mailer->isHTML(true);
         $mailer->CharSet = 'UTF-8';
+
+        $mailer->From = SecretUtils::getEmail();
+        $mailer->Sender = SecretUtils::getEmail();
+        $mailer->FromName = 'Suporte Kugel';
+        $mailer->addReplyTo(SecretUtils::getEmail(), 'Suporte Kugel');
+        $mailer->Subject = $assunto;
+        $mailer->Body = $mensagem;
+
+        $mailer->isHTML(true);
+
+        $mailer->IsSMTP();
+        $mailer->Host = SecretUtils::getHost();
+        $mailer->Port = SecretUtils::getPort();
+        
         $mailer->Mailer = 'smtp'; 
-        $mailer->SMTPSecure = 'ssl';
+        $mailer->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true,
+            ),
+        );
 
         $mailer->SMTPAuth = true;
         $mailer->Username = SecretUtils::getEmail();
         $mailer->Password = SecretUtils::getPassword();
 
-        $mailer->From = SecretUtils::getEmail();
-        $mailer->FromName = 'Ricardo Montania';
-
         foreach ($destinatarios as $dest) {
             $mailer->addAddress($dest);
         }
 
-        $mailer->Subject = $assunto;
-        $mailer->Body = $mensagem;
+        $send_status = $mailer->send();
+        if (!$send_status) {
+            return $mailer->ErrorInfo;
+        }
         
-        return $mailer->send();
+        return 'OK';
     }
 }

@@ -17,6 +17,7 @@ $app->get('/Sobre', ViewController::class . ':viewSobre')->setName('sobre');
 $app->get('/Problema/{id}', ViewController::class . ':viewProblema')->setName('problema');
 $app->get('/ConsultaNFe', ViewController::class . ':viewConsultaNFe');
 $app->get('/ConsultaNFeSE[/{mostrar}]', ViewController::class . ':viewConsultaNFeSE')->setName('consulta-nfe');
+$app->get('/ConsultaMDFe', ViewController::class . ':viewConsultaMDFe');
 $app->get('/ConsultaMDFeSE[/{mostrar}]', ViewController::class . ':viewConsultaMDFeSE')->setName('consulta-mdfe');
 $app->get('/ConsultaJessicaSE[/{mostrar}]', ViewController::class . ':viewConsultaJessicaSE')->setName('consulta-jessica');
 $app->get('/ConsultaJessica', ViewController::class . ':viewConsultaJessica');

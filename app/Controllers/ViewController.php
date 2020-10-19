@@ -668,4 +668,87 @@ class ViewController extends Controller {
 
         return $this->view->render($response, 'consultamdfe.twig', compact('data'));
     }
+
+    public function viewConsultaMDFe($request, $response) {
+        $dataSite = SefazUtils::getConsultaMDFe();
+        $mostrar = $request->getAttribute('mostrar');
+
+        if ($mostrar == '') {
+            $mostrar = 'naovistos';
+        }
+
+        $data = [
+            'avisosList' => [],
+            'noticiasList' => [],
+            'documentosList' => [],
+        ];
+
+        // AvisoMDFe
+        foreach ($dataSite['avisosList'] as $item) {
+            $result = AvisoMDFe::where('titulo', $item['titulo'])->first();
+            if (!$result) {
+                $c = AvisoMDFe::create([
+                    'titulo' => $item['titulo'],
+                    'descricao' => $item['descricao'],
+                    'publicado_em' => $item['data'],
+                    'visto' => 'N',
+                ]);
+                array_push($data['avisosList'], $c);
+            } else {
+                if ($mostrar == 'vistos' && $result->visto == 'S') {
+                    array_push($data['avisosList'], $result);
+                } else if ($mostrar == 'naovistos' && $result->visto == 'N') {
+                    array_push($data['avisosList'], $result);
+                }
+            }
+        }
+
+        $enviarEmail =
+            count($data['avisosList']) > 0 ||
+            count($data['noticiasList']) > 0 ||
+            count($data['documentosList']) > 0;
+
+            if ($enviarEmail) {
+                // Enviar e-mail
+                
+                $mensagem = '<html><body><p style="font-family: Helvetica, Arial, sans-serif; font-size: 18px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Olá!</p>'.
+                    '<br><p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">Existem novos dados no portal do MDFe!</p>'.
+                    '<br>';
+    
+                if (count($data['avisosList']) > 0) {
+                    $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; line-height: 12px; color: rgb(33, 33, 33); margin-bottom: 10px;">';
+                    $mensagem .= 'Aviso(s):';
+                    $mensagem .= '<ul>';
+    
+                    foreach ($data['avisosList'] as $item) {
+                        $mensagem .= '<li>' . $item->descricao . '</li>';
+                    }
+                    $mensagem .= '</ul></p>';
+                }
+    
+                $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; color: rgb(33, 33, 33); margin-bottom: 10px;">Atenciosamente,<br></p>';
+                $mensagem .= '<p style="font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 12px; margin-bottom: 10px;">';
+                $mensagem .= '<span style="font-weight: bold; color: rgb(33, 33, 33); display: inline;" class="txt signature_companyname-target sig-hide">Bot Kugel Info!</span>';
+                $mensagem .= '<span class="company-sep break" style="display: inline;"></span>';
+                $mensagem .= '</p></body></html>';
+    
+                $mailer = EmailUtils::enviarEmail(
+                    ['ricardo@kugel.com.br',
+                     'sigi@kugel.com.br',
+                     'valdecir@kugel.com.br',
+                     'daniel@kugel.com.br'
+                    ],
+                    'Novos dados no portal da MDFe!',
+                    $mensagem
+                );
+        
+                if ($mailer) {
+                    return "OK";
+                } else {
+                    return "FAIL: " . $mailer->ErrorInfo;
+                }
+            } else {
+                return "OK";
+            }
+    }
 }
