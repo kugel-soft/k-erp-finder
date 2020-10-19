@@ -99,9 +99,9 @@ class SefazUtils {
         */
         $conteudoDinamico = $domCrawler->find('#conteudoDinamico')[0];
         if ($conteudoDinamico) {
-            $indentacaoConteudo = $conteudoDinamico->find('.indentacaoConteudo')[0];
-            if ($indentacaoConteudo) {
-                foreach ($indentacaoConteudo->find('p') as $p) {
+            $indentacaoNormal = $conteudoDinamico->find('.indentacaoNormal')[0];
+            if ($indentacaoNormal) {
+                foreach ($indentacaoNormal->find('p') as $p) {
                     $text = $p->find('span')[0]->innertext;
                     array_push($data['docDiversosList'], $text);
                 }
